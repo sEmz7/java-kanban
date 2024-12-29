@@ -1,7 +1,6 @@
 import java.util.Objects;
 
 public class Task {
-    // test 2
     protected String taskName;
     protected String description;
 
