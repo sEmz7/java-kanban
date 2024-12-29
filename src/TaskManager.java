@@ -116,14 +116,11 @@ public class TaskManager {
                             }
                             break;
                     }
-
-
-
+                case 4:
+                    isRunning = false;
+                    break;
             }
-
-
         }
-
     }
 
     public static void printMenu() {
@@ -132,6 +129,7 @@ public class TaskManager {
                 1. Задача
                 2. Эпик
                 3. Подзадача
+                4. Завершить программу
                 """);
     }
 
