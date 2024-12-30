@@ -7,6 +7,10 @@ public class Task {
     protected final int taskID;
     protected TaskStatus taskStatus;
 
+    public void setTaskStatus(TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
     public static int taskCount;
 
 
