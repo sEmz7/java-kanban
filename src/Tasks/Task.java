@@ -1,3 +1,7 @@
+package Tasks;
+
+import Manager.TaskManager;
+
 import java.util.Objects;
 
 public class Task {
@@ -11,8 +15,9 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
-    public static int taskCount;
-
+    public TaskStatus getTaskStatus() {
+        return taskStatus;
+    }
 
     public String getDescription() {
         return description;
@@ -33,8 +38,7 @@ public class Task {
     public Task(String taskName, String description) {
         this.taskName = taskName;
         this.description = description;
-        taskCount++;
-        taskID = taskCount;
+        taskID = TaskManager.taskCount;
         this.taskStatus = TaskStatus.NEW;
     }
 
