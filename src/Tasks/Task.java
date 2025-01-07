@@ -1,7 +1,5 @@
 package Tasks;
 
-import Manager.TaskManager;
-
 import java.util.Objects;
 
 public class Task {
@@ -35,10 +33,10 @@ public class Task {
         this.description = description;
     }
 
-    public Task(String taskName, String description) {
+    public Task(String taskName, String description, int taskCount) {
         this.taskName = taskName;
         this.description = description;
-        taskID = TaskManager.taskCount;
+        taskID = taskCount;
         this.taskStatus = TaskStatus.NEW;
     }
 
