@@ -98,7 +98,6 @@ public class TaskManager {
     }
 
     public Epic getEpicByID(int epicIDtoGet) {
-        Epic epicToGet = epics.get(epicIDtoGet);
         return epics.get(epicIDtoGet);
     }
 
