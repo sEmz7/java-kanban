@@ -2,8 +2,8 @@ package Tasks;
 
 public class SubTask extends Epic {
 
-    public SubTask(String taskName, String description, int taskCount) {
-        super(taskName, description, taskCount);
+    public SubTask(String taskName, String description, TaskStatus taskStatus) {
+        super(taskName, description, taskStatus);
     }
 
 

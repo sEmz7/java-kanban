@@ -2,6 +2,7 @@ import Manager.TaskManager;
 import Tasks.Epic;
 import Tasks.SubTask;
 import Tasks.Task;
+import Tasks.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ public class Main {
         boolean isRunning = true;
 
         while(isRunning) {
-            taskManager.checkEpicStatus();
             printMenu();
             System.out.print(">>> ");
             int taskVariant = scanner.nextInt();
@@ -66,8 +66,16 @@ public class Main {
                             String taskName = scanner.next();
                             System.out.print("Введите описание задачи: ");
                             String taskDescription = scanner.next();
-                            taskManager.createTask(taskName, taskDescription);
-                            System.out.println("Задача успешно добавлена.\n");
+                            System.out.print("Введите статус задачи (NEW, IN_PROGRESS, DONE): ");
+                            String status = scanner.next();
+                            TaskStatus taskStatus = TaskStatus.valueOf(status);
+                            try {
+                                Task newTask = new Task(taskName, taskDescription, taskStatus);
+                                taskManager.createTask(newTask);
+                                System.out.println("Задача успешно добавлена.\n");
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Нет такого статуса.");
+                            }
                             break;
                         case 5:
                             System.out.print("\nВведите ID задачи: ");
@@ -77,8 +85,17 @@ public class Main {
                                 String newTaskName = scanner.next();
                                 System.out.print("Введите новое описание задачи: ");
                                 String newTaskDescription = scanner.next();
-                                taskManager.updateTask(newTaskName, newTaskDescription, taskID);
-                                System.out.println("Задача обновлена.\n");
+                                System.out.print("Введите статус задачи (NEW, IN_PROGRESS, DONE): ");
+                                String newStatus = scanner.next();
+                                TaskStatus newTaskStatus = TaskStatus.valueOf(newStatus);
+                                try {
+                                    Task task = new Task(newTaskName, newTaskDescription, newTaskStatus);
+                                    task.setTaskID(taskID);
+                                    taskManager.updateTask(task);
+                                    System.out.println("Задача обновлена.\n");
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Нет такого статуса.");
+                                }
                             } else {
                                 System.out.println("Нет задачи с таким ID.\n");
                             }
@@ -87,24 +104,8 @@ public class Main {
                             System.out.print("Введите ID задачи: ");
                             int idToRemove = scanner.nextInt();
                             if(taskManager.taskIsExist(idToRemove)) {
-                                taskManager.removeTaksByID(idToRemove);
+                                taskManager.removeTaskByID(idToRemove);
                                 System.out.println("Задача удалена.\n");
-                            } else {
-                                System.out.println("Нет задачи с таким ID.\n");
-                            }
-                            break;
-                        case 7:
-                            System.out.print("Введите ID задачи: ");
-                            int IDtoUpdateStatus = scanner.nextInt();
-                            if(taskManager.taskIsExist(IDtoUpdateStatus)) {
-                                System.out.print("Введите новый статус(NEW, IN_PROGRESS, DONE): ");
-                                String taskStatus = scanner.next();
-                                try {
-                                    taskManager.changeTaskStatus(IDtoUpdateStatus, taskStatus);
-                                    System.out.println("Статус изменен.\n");
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Нет такого статуса.\n");
-                                }
                             } else {
                                 System.out.println("Нет задачи с таким ID.\n");
                             }
@@ -173,7 +174,9 @@ public class Main {
                             String epicName = scanner.next();
                             System.out.print("Введите описание эпика: ");
                             String epicDescription = scanner.next();
-                            taskManager.createEpic(epicName, epicDescription);
+                            TaskStatus epicStatus = TaskStatus.NEW;
+                            Epic newEpic = new Epic(epicName, epicDescription, epicStatus);
+                            taskManager.createEpic(newEpic);
                             System.out.println("Эпик успешно добавлен.\n");
                             break;
                         case 5:
@@ -184,7 +187,9 @@ public class Main {
                                 String newEpicName = scanner.next();
                                 System.out.print("Введите новое описание эпика: ");
                                 String newEpicDescription = scanner.next();
-                                taskManager.updateEpic(newEpicName, newEpicDescription, epicIDtoUpdate);
+                                Epic epic = new Epic(newEpicName, newEpicDescription, TaskStatus.NEW);
+                                epic.setTaskID(epicIDtoUpdate);
+                                taskManager.updateEpic(epic);
                                 System.out.println("Эпик обновлен.\n");
                             } else {
                                 System.out.println("Нет эпика с таким ID.\n");
@@ -240,8 +245,8 @@ public class Main {
                             break;
                         case 3:
                             System.out.print("Введите ID подзадачи: ");
-                            int epicIDtoGetSubtask = scanner.nextInt();
-                            SubTask subTask = taskManager.getSubtaskByID(epicIDtoGetSubtask);
+                            int subtaskID = scanner.nextInt();
+                            SubTask subTask = taskManager.getSubtaskByID(subtaskID);
                             if(subTask == null) {
                                 System.out.println("Нет подзадачи с таким ID");
                             } else {
@@ -256,8 +261,11 @@ public class Main {
                                 String subtaskName = scanner.next();
                                 System.out.print("Введите описание подзадачи: ");
                                 String subtaskDesctiprion = scanner.next();
-                                taskManager.createSubtask(subtaskName, subtaskDesctiprion, epicIDtoAddSubtask);
+                                TaskStatus taskStatus = TaskStatus.NEW;
+                                SubTask newSubTask = new SubTask(subtaskName, subtaskDesctiprion, taskStatus);
+                                taskManager.createSubtask(newSubTask, epicIDtoAddSubtask);
                                 System.out.println("Подзадача добавлена.\n");
+                                taskManager.updateEpicStatus();
                             } else {
                                 System.out.println("Нет эпика с таким ID.\n");
                             }
@@ -270,8 +278,19 @@ public class Main {
                                 String newTaskName = scanner.next();
                                 System.out.print("Введите новое описание подзадачи: ");
                                 String newTaskDescription = scanner.next();
-                                taskManager.updateSubtask(newTaskName, newTaskDescription, subtaskIdToUpdate);
-                                System.out.println("Подзадача обновлена.\n");
+                                System.out.print("Введите статус задачи (NEW, IN_PROGRESS, DONE): ");
+                                String newStatus = scanner.next();
+                                TaskStatus newSubtaskStatus = TaskStatus.valueOf(newStatus);
+                                try {
+                                    SubTask newSubTask = new SubTask(newTaskName, newTaskDescription, newSubtaskStatus);
+                                    newSubTask.setTaskID(subtaskIdToUpdate);
+                                    taskManager.updateSubtask(newSubTask, subtaskIdToUpdate);
+                                    System.out.println("Подзадача обновлена.\n");
+                                    taskManager.updateEpicStatus();
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Нет такого статуса.");
+                                }
+
                             } else {
                                 System.out.println("Нет подзадачи с таким ID.\n");
                             }
@@ -296,6 +315,7 @@ public class Main {
                                 try {
                                     taskManager.changeSubtaskStatus(subtaskIDtoUpdateStatus, userInputedStatus);
                                     System.out.println("Новый статус установлен.\n");
+                                    taskManager.updateEpicStatus();
                                 } catch (IllegalArgumentException e) {
                                     System.out.println("Нет такого статуса.\n");
                                 }
@@ -334,7 +354,6 @@ public class Main {
                 4. Создать задачу
                 5. Обновить задачу
                 6. Удалить задачу по ID
-                7. Изменить статус задачи
                 """);
     }
 

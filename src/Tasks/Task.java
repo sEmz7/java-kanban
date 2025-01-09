@@ -6,8 +6,18 @@ public class Task {
     protected String taskName;
     protected String description;
 
-    protected final int taskID;
+    protected int taskID;
     protected TaskStatus taskStatus;
+
+    public Task(String taskName, String description, TaskStatus taskStatus) {
+        this.taskName = taskName;
+        this.description = description;
+        this.taskStatus = taskStatus;
+    }
+
+    public void setTaskID(int taskID) {
+        this.taskID = taskID;
+    }
 
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
@@ -31,13 +41,6 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Task(String taskName, String description, int taskCount) {
-        this.taskName = taskName;
-        this.description = description;
-        taskID = taskCount;
-        this.taskStatus = TaskStatus.NEW;
     }
 
     public int getTaskID() {
