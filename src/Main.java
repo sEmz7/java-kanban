@@ -121,9 +121,9 @@ public class Main {
                     switch (epicAction) {
                         case 1:
                             if(!taskManager.epicsIsEmpty()) {
-                                HashMap<Integer, Epic> epics = taskManager.getAllEpics();
+                                ArrayList<Epic> epics = taskManager.getAllEpics();
                                 System.out.println("==============================");
-                                for (Epic epic: epics.values()) {
+                                for (Epic epic: epics) {
                                     System.out.println(epic);
                                     System.out.println("Подзадачи эпика:");
                                     if (epic.getSubTasks().isEmpty()) {
@@ -263,9 +263,10 @@ public class Main {
                                 String subtaskDesctiprion = scanner.next();
                                 TaskStatus taskStatus = TaskStatus.NEW;
                                 SubTask newSubTask = new SubTask(subtaskName, subtaskDesctiprion, taskStatus);
+                                newSubTask.setEpicID(epicIDtoAddSubtask);
                                 taskManager.createSubtask(newSubTask, epicIDtoAddSubtask);
                                 System.out.println("Подзадача добавлена.\n");
-                                taskManager.updateEpicStatus();
+                                taskManager.updateEpicStatus(taskManager.getEpicByID(epicIDtoAddSubtask));
                             } else {
                                 System.out.println("Нет эпика с таким ID.\n");
                             }
@@ -282,11 +283,14 @@ public class Main {
                                 String newStatus = scanner.next();
                                 TaskStatus newSubtaskStatus = TaskStatus.valueOf(newStatus);
                                 try {
+                                    SubTask oldSubtask = taskManager.getSubtaskByID(subtaskIdToUpdate);
+                                    int epicID = oldSubtask.getEpicID();
                                     SubTask newSubTask = new SubTask(newTaskName, newTaskDescription, newSubtaskStatus);
+                                    newSubTask.setEpicID(epicID);
                                     newSubTask.setTaskID(subtaskIdToUpdate);
                                     taskManager.updateSubtask(newSubTask, subtaskIdToUpdate);
                                     System.out.println("Подзадача обновлена.\n");
-                                    taskManager.updateEpicStatus();
+                                    taskManager.updateEpicStatus(taskManager.getEpicByID(newSubTask.getEpicID()));
                                 } catch (IllegalArgumentException e) {
                                     System.out.println("Нет такого статуса.");
                                 }
@@ -315,13 +319,18 @@ public class Main {
                                 try {
                                     taskManager.changeSubtaskStatus(subtaskIDtoUpdateStatus, userInputedStatus);
                                     System.out.println("Новый статус установлен.\n");
-                                    taskManager.updateEpicStatus();
+                                    int epicId = taskManager.getSubtaskByID(subtaskIDtoUpdateStatus).getEpicID();
+                                    taskManager.updateEpicStatus(taskManager.getEpicByID(epicId));
                                 } catch (IllegalArgumentException e) {
                                     System.out.println("Нет такого статуса.\n");
                                 }
                             } else {
                                 System.out.println("Нет подзадачи с таким ID.\n");
                             }
+                            break;
+                        case 8:
+                            taskManager.removeAllSubtasks();
+                            System.out.println("Все подзадачи удалены.\n");
                             break;
                         default:
                             System.out.println("Нет такой команды.\n");
@@ -377,6 +386,7 @@ public class Main {
                 5. Обновить подзадачу
                 6. Удалить подзадачу по ID
                 7. Изменить статус подзадачи
+                8. Удалить все подзадачи
                 """);
     }
 }
