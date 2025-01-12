@@ -34,11 +34,9 @@ public class TaskManager {
             if (sizeOfSubtasks == counterOfDone) {
                 currentEpicStatus = TaskStatus.DONE;
                 epic.setTaskStatus(currentEpicStatus);
-                return;
             }  else if (sizeOfSubtasks == counterOfNew) {
                 currentEpicStatus = TaskStatus.NEW;
                 epic.setTaskStatus(currentEpicStatus);
-                return;
             }
         } else if (currentEpicStatus == TaskStatus.DONE) {
             for (SubTask subTask : epic.getSubTasks()) {
@@ -112,10 +110,17 @@ public class TaskManager {
     }
 
     public void updateEpic(Epic epic) {
+        epic.setSubTasks(epics.get(epic.getTaskID()).getSubTasks());
         epics.put(epic.getTaskID(), epic);
     }
 
     public void removeEpicByID(int epicIDtoRemove) {
+        ArrayList<SubTask> arrayOfSubtasks = epics.get(epicIDtoRemove).getSubTasks();
+        for(SubTask subTask: arrayOfSubtasks) {
+            if (subTask.getEpicID() == epicIDtoRemove) {
+                subtasks.remove(subTask.getTaskID());
+            }
+        }
         epics.remove(epicIDtoRemove);
     }
 
@@ -124,6 +129,12 @@ public class TaskManager {
     }
 
     public void removeAllSubtasksInEpic(int epicIDtoRemoveSubtask) {
+        ArrayList<SubTask> arrayOfSubtasks = epics.get(epicIDtoRemoveSubtask).getSubTasks();
+        for(SubTask subTask: arrayOfSubtasks) {
+            if (subTask.getEpicID() == epicIDtoRemoveSubtask) {
+                subtasks.remove(subTask.getTaskID());
+            }
+        }
         epics.get(epicIDtoRemoveSubtask).setSubTasks(new ArrayList<>());
     }
 

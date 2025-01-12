@@ -5,7 +5,6 @@ import Tasks.Task;
 import Tasks.TaskStatus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
@@ -211,7 +210,7 @@ public class Main {
                     break;
                 case 3: // Subtask
                     printSubTaskMenu();
-                    System.out.println(">>> ");
+                    System.out.print(">>> ");
                     int subtaskCommand = scanner.nextInt();
                     switch (subtaskCommand) {
                         case 1:
