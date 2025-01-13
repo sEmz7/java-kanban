@@ -263,9 +263,8 @@ public class Main {
                                 TaskStatus taskStatus = TaskStatus.NEW;
                                 SubTask newSubTask = new SubTask(subtaskName, subtaskDesctiprion, taskStatus);
                                 newSubTask.setEpicID(epicIDtoAddSubtask);
-                                taskManager.createSubtask(newSubTask, epicIDtoAddSubtask);
+                                taskManager.createSubtask(newSubTask);
                                 System.out.println("Подзадача добавлена.\n");
-                                taskManager.updateEpicStatus(taskManager.getEpicByID(epicIDtoAddSubtask));
                             } else {
                                 System.out.println("Нет эпика с таким ID.\n");
                             }
@@ -280,18 +279,17 @@ public class Main {
                                 String newTaskDescription = scanner.next();
                                 System.out.print("Введите статус задачи (NEW, IN_PROGRESS, DONE): ");
                                 String newStatus = scanner.next();
-                                TaskStatus newSubtaskStatus = TaskStatus.valueOf(newStatus);
                                 try {
+                                    TaskStatus newSubtaskStatus = TaskStatus.valueOf(newStatus);
                                     SubTask oldSubtask = taskManager.getSubtaskByID(subtaskIdToUpdate);
                                     int epicID = oldSubtask.getEpicID();
                                     SubTask newSubTask = new SubTask(newTaskName, newTaskDescription, newSubtaskStatus);
                                     newSubTask.setEpicID(epicID);
                                     newSubTask.setTaskID(subtaskIdToUpdate);
-                                    taskManager.updateSubtask(newSubTask, subtaskIdToUpdate);
+                                    taskManager.updateSubtask(newSubTask);
                                     System.out.println("Подзадача обновлена.\n");
-                                    taskManager.updateEpicStatus(taskManager.getEpicByID(newSubTask.getEpicID()));
                                 } catch (IllegalArgumentException e) {
-                                    System.out.println("Нет такого статуса.");
+                                    System.out.println("Нет такого статуса.\n");
                                 }
 
                             } else {
@@ -310,24 +308,6 @@ public class Main {
                             }
                             break;
                         case 7:
-                            System.out.print("Введите ID подзадачи: ");
-                            int subtaskIDtoUpdateStatus = scanner.nextInt();
-                            if(taskManager.subtaskIsExist(subtaskIDtoUpdateStatus)) {
-                                System.out.print("Введите новый статус подзадачи(NEW, IN_PROGRESS, DONE): ");
-                                String userInputedStatus = scanner.next();
-                                try {
-                                    taskManager.changeSubtaskStatus(subtaskIDtoUpdateStatus, userInputedStatus);
-                                    System.out.println("Новый статус установлен.\n");
-                                    int epicId = taskManager.getSubtaskByID(subtaskIDtoUpdateStatus).getEpicID();
-                                    taskManager.updateEpicStatus(taskManager.getEpicByID(epicId));
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Нет такого статуса.\n");
-                                }
-                            } else {
-                                System.out.println("Нет подзадачи с таким ID.\n");
-                            }
-                            break;
-                        case 8:
                             taskManager.removeAllSubtasks();
                             System.out.println("Все подзадачи удалены.\n");
                             break;
@@ -384,8 +364,7 @@ public class Main {
                 4. Создать подзадачу
                 5. Обновить подзадачу
                 6. Удалить подзадачу по ID
-                7. Изменить статус подзадачи
-                8. Удалить все подзадачи
+                7. Удалить все подзадачи
                 """);
     }
 }
