@@ -8,6 +8,10 @@ public class SubTask extends Epic {
         super(taskName, description, taskStatus);
     }
 
+    public SubTask(int taskID, String taskName, String description, TaskStatus taskStatus) {
+        super(taskID, taskName, description, taskStatus);
+    }
+
     public int getEpicID() {
         return epicID;
     }
@@ -16,9 +20,14 @@ public class SubTask extends Epic {
         this.epicID = epicID;
     }
 
+    public SubTask getSnapshot() {
+        return new SubTask(this.getTaskID(), this.getTaskName(), this.getDescription(), this.getTaskStatus());
+    }
+
     @Override
     public String toString() {
-        return "\nID подзадачи: " + taskID +
+        return  "\nТип задачи: подзадача" +
+                "\nID подзадачи: " + taskID +
                 "\nНазвание подзадачи: " + taskName +
                 "\nОписание подзадачи: " + description +
                 "\nСтатус подзадачи: " + taskStatus;

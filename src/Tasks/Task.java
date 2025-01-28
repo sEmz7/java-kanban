@@ -15,6 +15,17 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    protected Task(Integer taskID, String taskName, String description, TaskStatus taskStatus) {
+        this.taskID = taskID;
+        this.taskName = taskName;
+        this.description = description;
+        this.taskStatus = taskStatus;
+    }
+
+    public Task getSnapshot() {
+        return new Task(this.getTaskID(), this.getTaskName(), this.getDescription(), this.getTaskStatus());
+    }
+
     public void setTaskID(int taskID) {
         this.taskID = taskID;
     }
