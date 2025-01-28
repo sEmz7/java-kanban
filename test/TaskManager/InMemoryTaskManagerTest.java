@@ -1,0 +1,52 @@
+package TaskManager;
+
+import Manager.Managers;
+import Manager.TaskManager;
+import Tasks.Epic;
+import Tasks.SubTask;
+import Tasks.Task;
+import Tasks.TaskStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class InMemoryTaskManagerTest {
+    static TaskManager manager;
+
+    @BeforeEach
+    void beforeEach() {
+        manager = Managers.getDefaultTaskManager();
+    }
+
+    @Test
+    void shouldCreateDifferentTasksAndFindTasks() {
+        Task task1 = new Task("1", "1", TaskStatus.NEW);
+        manager.createTask(task1);
+        Epic epic1 = new Epic("2", "2", TaskStatus.NEW);
+        manager.createEpic(epic1);
+        SubTask subTask1 = new SubTask("3", "3", TaskStatus.NEW);
+        subTask1.setEpicID(epic1.getTaskID());
+        manager.createSubtask(subTask1);
+
+        assertEquals(task1, manager.getTaskByID(task1.getTaskID()));
+        assertEquals(epic1, manager.getEpicByID(epic1.getTaskID()));
+        assertEquals(subTask1, manager.getSubtaskByID(subTask1.getTaskID()));
+
+        assertNull(manager.getSubtaskByID(9999));
+    }
+
+    @Test
+    void shouldNotConflictWithRandomID() {
+        Task taskManualID = new Task("1", "2", TaskStatus.IN_PROGRESS);
+        Task taskGeneratedID = new Task("2", "3", TaskStatus.NEW);
+        taskManualID.setTaskID(1);
+        manager.createTask(taskManualID);
+        manager.createTask(taskGeneratedID);
+
+        assertEquals(taskManualID, manager.getTaskByID(taskManualID.getTaskID()));
+        assertNotEquals(taskManualID.getTaskID(), taskGeneratedID.getTaskID());
+        assertEquals(taskGeneratedID, manager.getTaskByID(taskGeneratedID.getTaskID()));
+    }
+
+}

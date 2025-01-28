@@ -5,12 +5,13 @@ import Tasks.SubTask;
 import Tasks.Task;
 import Tasks.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main<T extends Task> {
     public static void main(String[] args) {
+
+        /*                    Проверка истории                    */
+
         Scanner scanner = new Scanner(System.in);
         TaskManager manager = Managers.getDefaultTaskManager();
         Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
@@ -63,7 +64,7 @@ public class Main<T extends Task> {
             System.out.println(subtask);
         }
 
-        System.out.println("История:");
+        System.out.println("\n\n\t\t\tИстория:\n\n");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
         }
