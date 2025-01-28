@@ -42,8 +42,10 @@ class EpicTest {
     @Test
     void taskHeirEqualsIfSameID() {
         Epic epic1 = new Epic("Epic1", "Desc1", TaskStatus.IN_PROGRESS);
-        Epic epic2 = epic1.getSnapshot();
-        assertEquals(epic1.getTaskID(), epic2.getTaskID());
+        Epic epic2 = new Epic("Epic2", "Desc2", TaskStatus.NEW);
+        epic1.setTaskID(1);
+        epic2.setTaskID(1);
+
         assertEquals(epic1, epic2);
     }
 

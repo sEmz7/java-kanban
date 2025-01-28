@@ -22,8 +22,10 @@ class TaskTest {
     @Test
     void taskEqualsIfSameID() {
         Task task1 = new Task("Task1", "Desc1", TaskStatus.NEW);
-        Task task2 = task1.getSnapshot();
-        assertEquals(task1.getTaskID(), task2.getTaskID());
+        Task task2 = new Task("Task2", "Desc2", TaskStatus.NEW);
+        task1.setTaskID(1);
+        task2.setTaskID(1);
+
         assertEquals(task1, task2);
     }
 
