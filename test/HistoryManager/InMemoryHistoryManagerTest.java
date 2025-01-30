@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class InMemoryHistoryManagerTest {
@@ -31,9 +32,9 @@ class InMemoryHistoryManagerTest {
         task.setTaskName("Updated task1 name");
         manager.updateTask(task);
         historyManager.addTask(task); // сохранили вторую версию task
-        List history = historyManager.getHistory();
-        Task firstVersion = (Task) history.get(0);
-        Task secondVersion = (Task) history.get(1);
+        ArrayList<Task> history = historyManager.getHistory();
+        Task firstVersion = history.get(0);
+        Task secondVersion = history.get(1);
 
         assertNotNull(history);
         assertEquals(2, history.size());

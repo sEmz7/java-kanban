@@ -8,11 +8,13 @@ import java.util.Objects;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final List<Task> historyStorage = new ArrayList<>();
+    private final ArrayList<Task> historyStorage = new ArrayList<>();
 
     @Override
     public void addTask(Task task) {
-        if(Objects.isNull(task)) return;
+        if(Objects.isNull(task)) {
+            return;
+        }
 
         historyStorage.add(task.getSnapshot());
 
@@ -23,7 +25,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public List<Task> getHistory() {
-        return historyStorage;
+    public ArrayList<Task> getHistory() {
+        return new ArrayList<>(historyStorage);
     }
 }
