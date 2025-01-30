@@ -32,10 +32,12 @@ class InMemoryHistoryManagerTest {
         manager.updateTask(task);
         historyManager.addTask(task); // сохранили вторую версию task
         List history = historyManager.getHistory();
+        Task firstVersion = (Task) history.get(0);
+        Task secondVersion = (Task) history.get(1);
 
         assertNotNull(history);
         assertEquals(2, history.size());
-        assertNotEquals(history.get(0), history.get(1));// первая версия != вторая
+        assertNotEquals(firstVersion.getTaskName(), secondVersion.getTaskName()); // первая версия != вторая
     }
 
     @Test
