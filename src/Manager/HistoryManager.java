@@ -9,5 +9,5 @@ public interface HistoryManager {
 
     void addTask(Task task);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

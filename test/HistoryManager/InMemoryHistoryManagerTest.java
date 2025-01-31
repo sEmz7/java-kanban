@@ -32,7 +32,7 @@ class InMemoryHistoryManagerTest {
         task.setTaskName("Updated task1 name");
         manager.updateTask(task);
         historyManager.addTask(task); // сохранили вторую версию task
-        ArrayList<Task> history = historyManager.getHistory();
+        List<Task> history = historyManager.getHistory();
         Task firstVersion = history.get(0);
         Task secondVersion = history.get(1);
 

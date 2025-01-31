@@ -13,18 +13,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
 
-
-
-    public void addHistory(Task task) {
+    private void addHistory(Task task) {
         historyManager.addTask(task);
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
-    public void updateEpicStatus(Epic epic) {
+    private void updateEpicStatus(Epic epic) {
         ArrayList<SubTask> epicSubtasks = epic.getSubTasks();
         if (epicSubtasks.isEmpty()) {
             epic.setTaskStatus(TaskStatus.NEW);
