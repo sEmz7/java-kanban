@@ -40,7 +40,6 @@ class InMemoryHistoryManagerTest {
         assertEquals(task2, historyManager.getHistory().get(1));
     }
 
-
     @Test
     void shouldRemoveFromHistory() {
         Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
