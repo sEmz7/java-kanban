@@ -5,11 +5,11 @@ import manager.Managers;
 import manager.TaskManager;
 import tasks.Task;
 import tasks.TaskStatus;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 
 class InMemoryHistoryManagerTest {

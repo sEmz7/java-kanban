@@ -13,7 +13,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void addTask(Task task) {
-        if(Objects.isNull(task))  {
+        if (Objects.isNull(task)) {
             return;
         }
         if (nodeMap.containsKey(task.getTaskID())) {
@@ -34,7 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public List<Task> getHistory() {
         List<Task> result = new ArrayList<>();
         Node node = head;
-        while(Objects.nonNull(node)) {
+        while (Objects.nonNull(node)) {
             result.add(node.getData());
             node = node.next;
         }
