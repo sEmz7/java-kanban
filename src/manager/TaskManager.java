@@ -21,7 +21,7 @@ public interface TaskManager {
 
     void updateTask(Task task);
 
-    boolean taskIsExist(int ID);
+    boolean taskIsExist(int id);
 
     void removeTaskByID(int idToRemove);
 
@@ -33,7 +33,7 @@ public interface TaskManager {
 
     Epic getEpicByID(int epicIDtoGet);
 
-    boolean epicIsExist(int ID);
+    boolean epicIsExist(int id);
 
     void createEpic(Epic epic);
 
