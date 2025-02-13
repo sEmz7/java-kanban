@@ -1,9 +1,8 @@
 package HistoryManager;
 
-import Manager.HistoryManager;
-import Manager.InMemoryHistoryManager;
-import Manager.Managers;
-import Manager.TaskManager;
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
 import Tasks.Task;
 import Tasks.TaskStatus;
 import static org.junit.jupiter.api.Assertions.*;

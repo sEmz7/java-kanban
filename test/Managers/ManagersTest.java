@@ -1,7 +1,7 @@
 package Managers;
 
-import Manager.Managers;
-import Manager.TaskManager;
+import manager.Managers;
+import manager.TaskManager;
 import Tasks.Task;
 import Tasks.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
