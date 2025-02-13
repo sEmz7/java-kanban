@@ -1,6 +1,7 @@
 package HistoryManager;
 
 import Manager.HistoryManager;
+import Manager.InMemoryHistoryManager;
 import Manager.Managers;
 import Manager.TaskManager;
 import Tasks.Task;
@@ -10,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 
 class InMemoryHistoryManagerTest {
     static TaskManager manager;
@@ -23,38 +23,47 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void shouldSaveLastVersionOfTask() {
+    void shouldSaveOnlyLastGetTask() {
+        Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
+        manager.createTask(task1);
+        historyManager.addTask(task1);
 
-        Task task = new Task("Task 1", "Desc 1", TaskStatus.NEW);
-        manager.createTask(task);
-        historyManager.addTask(task); // сохранили первую версию task
-        task.setTaskName("Updated task1 name");
-        manager.updateTask(task);
-        historyManager.addTask(task); // сохранили вторую версию task
-        List history = historyManager.getHistory();
+        Task task2 = new Task("# Task 2", "Description 2", TaskStatus.NEW);
+        manager.createTask(task2);
+        historyManager.addTask(task2);
+        manager.getTaskByID(task1.getTaskID());
+        manager.getTaskByID(task2.getTaskID());
+        manager.getTaskByID(task1.getTaskID());
 
-        assertNotNull(history);
-        assertEquals(2, history.size());
-        assertNotEquals(history.get(0), history.get(1));// первая версия != вторая
+        assertEquals(2, historyManager.getHistory().size());
+        assertEquals(task1, historyManager.getHistory().getFirst());
+        assertEquals(task2, historyManager.getHistory().get(1));
+    }
+
+
+    @Test
+    void shouldRemoveFromHistory() {
+        Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
+        manager.createTask(task1);
+        Task task2 = new Task("# Task 2", "Description 2", TaskStatus.NEW);
+        manager.createTask(task2);
+
+        manager.getTaskByID(task1.getTaskID());
+        manager.getTaskByID(task2.getTaskID());
+        manager.removeTaskByID(task1.getTaskID());
+
+        assertEquals(1, manager.getHistory().size());
     }
 
     @Test
-    void shouldAddInHistoryMax10Tasks() {
-        Task task = new Task("Task 1", "Desc 1", TaskStatus.NEW);
-        manager.createTask(task);
-        manager.getTaskByID(task.getTaskID()); // 1
-        manager.getTaskByID(task.getTaskID()); // 2
-        manager.getTaskByID(task.getTaskID()); // 3
-        manager.getTaskByID(task.getTaskID()); // 4
-        manager.getTaskByID(task.getTaskID()); // 5
-        manager.getTaskByID(task.getTaskID()); // 6
-        manager.getTaskByID(task.getTaskID()); // 7
-        manager.getTaskByID(task.getTaskID()); // 8
-        manager.getTaskByID(task.getTaskID()); // 9
-        manager.getTaskByID(task.getTaskID()); // 10
-        manager.getTaskByID(task.getTaskID()); // 11
+    void removedTaskShouldNotSaveData() {
+        Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
+        manager.createTask(task1);
+        Task task2 = new Task("# Task 2", "Description 2", TaskStatus.NEW);
+        manager.createTask(task2);
 
-        assertEquals(10, manager.getHistory().size());
-
+        manager.getTaskByID(task1.getTaskID());
+        manager.getTaskByID(task2.getTaskID());
     }
+
 }

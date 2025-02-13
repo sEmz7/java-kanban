@@ -90,8 +90,6 @@ class TaskTest {
         assertEquals(0, manager.getAllTasks().size());
     }
 
-
-
     @Test
     void shouldCreateAndGetTaskByID() {
         Task task = new Task("1", "1", TaskStatus.NEW);
@@ -123,7 +121,4 @@ class TaskTest {
 
         assertEquals(0, manager.getAllTasks().size());
     }
-
-
-
 }

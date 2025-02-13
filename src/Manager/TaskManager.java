@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    void updateEpicStatus(Epic epic);
 
     ArrayList<Task> getAllTasks();
 
@@ -60,7 +59,6 @@ public interface TaskManager {
 
     void removeAllSubtasks();
 
-    void addHistory(Task task);
 
     List<Task> getHistory();
 }
