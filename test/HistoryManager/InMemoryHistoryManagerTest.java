@@ -3,8 +3,8 @@ package HistoryManager;
 import manager.HistoryManager;
 import manager.Managers;
 import manager.TaskManager;
-import Tasks.Task;
-import Tasks.TaskStatus;
+import tasks.Task;
+import tasks.TaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
