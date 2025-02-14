@@ -1,21 +1,21 @@
-import Manager.Managers;
-import Manager.TaskManager;
-import Tasks.Epic;
-import Tasks.SubTask;
-import Tasks.Task;
-import Tasks.TaskStatus;
+import manager.Managers;
+import manager.TaskManager;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
+import tasks.TaskStatus;
 
-import java.util.Scanner;
-
-public class Main<T extends Task> {
+public class Main {
     public static void main(String[] args) {
 
         /*                    Проверка истории                    */
 
-        Scanner scanner = new Scanner(System.in);
         TaskManager manager = Managers.getDefaultTaskManager();
         Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
         manager.createTask(task1);
+
+        Task task2 = new Task("# Task 2", "Description 2", TaskStatus.NEW);
+        manager.createTask(task2);
 
         Epic epic1 = new Epic("# Epic 1", "Desc 1", TaskStatus.NEW);
         manager.createEpic(epic1);
@@ -28,24 +28,22 @@ public class Main<T extends Task> {
         subTask2.setEpicID(epic1.getTaskID());
         manager.createSubtask(subTask2);
 
-        SubTask getSub = manager.getSubtaskByID(subTask2.getTaskID());
-        Task getTask = manager.getTaskByID(task1.getTaskID());
-        Epic getEpic = manager.getEpicByID(epic1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getTask = manager.getTaskByID(task1.getTaskID());
-        getSub = manager.getSubtaskByID(subTask2.getTaskID());
-        getSub.setDescription("updated");
-        manager.updateSubtask(getSub);
-        getSub = manager.getSubtaskByID(subTask2.getTaskID());
+        Epic epic2 = new Epic("# Epic 2", "Desc 2", TaskStatus.NEW);
+        manager.createEpic(epic2);
+
+        manager.getSubtaskByID(subTask1.getTaskID());
+        manager.getTaskByID(task1.getTaskID());
+        manager.getEpicByID(epic1.getTaskID());
+        manager.getSubtaskByID(subTask1.getTaskID());
+        manager.getEpicByID(epic2.getTaskID());
+        manager.getTaskByID(task2.getTaskID());
+        manager.getTaskByID(task1.getTaskID());
+        manager.removeEpicByID(epic1.getTaskID());
 
         printAllTasks(manager);
 
     }
+
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Задачи:");
         for (Task task : manager.getAllTasks()) {

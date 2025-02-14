@@ -1,7 +1,7 @@
-package Tasks;
+package tasks;
 
-import Manager.Managers;
-import Manager.TaskManager;
+import manager.Managers;
+import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -90,8 +90,6 @@ class TaskTest {
         assertEquals(0, manager.getAllTasks().size());
     }
 
-
-
     @Test
     void shouldCreateAndGetTaskByID() {
         Task task = new Task("1", "1", TaskStatus.NEW);
@@ -123,7 +121,4 @@ class TaskTest {
 
         assertEquals(0, manager.getAllTasks().size());
     }
-
-
-
 }

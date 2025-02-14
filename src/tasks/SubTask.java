@@ -1,4 +1,4 @@
-package Tasks;
+package tasks;
 
 public class SubTask extends Epic {
     protected int epicID;
@@ -26,7 +26,7 @@ public class SubTask extends Epic {
 
     @Override
     public String toString() {
-        return  "\nТип задачи: подзадача" +
+        return "\nТип задачи: подзадача" +
                 "\nID подзадачи: " + taskID +
                 "\nНазвание подзадачи: " + taskName +
                 "\nОписание подзадачи: " + description +
