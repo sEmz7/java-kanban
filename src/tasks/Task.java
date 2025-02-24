@@ -1,5 +1,8 @@
 package tasks;
 
+import manager.FileBackedTaskManager;
+import manager.TaskManager;
+
 import java.util.Objects;
 
 public class Task {
@@ -76,11 +79,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\nТип задачи: Обычная задача" +
-                "\nID задачи: " + taskID +
-                "\nНазвание задачи: " + taskName +
-                "\nОписание задачи: " + description +
-                "\nСтатус задачи: " + taskStatus;
-
+        return taskID + "," + this.getClass().getSimpleName() +
+                "," + taskName + "," + taskStatus + "," + description + ",";
     }
 }
