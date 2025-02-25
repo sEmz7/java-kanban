@@ -1,4 +1,5 @@
 package manager;
+import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
@@ -28,7 +29,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public void save() {
+    public void save() throws ManagerSaveException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/data.txt"))) {
             for(Task task: tasks.values()) {
                 bw.write(task.toString() + "\n");
@@ -40,7 +41,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 bw.write(subTask.toString() + "\n");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Не удалось записать в файл.");
         }
     }
 
@@ -67,77 +68,130 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     @Override
     public void createTask(Task task) {
         super.createTask(task);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeAllTasks() {
         super.removeAllTasks();
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeTaskByID(int idToRemove) {
         super.removeTaskByID(idToRemove);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeAllEpics() {
         super.removeAllEpics();
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void createEpic(Epic epic) {
         super.createEpic(epic);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeEpicByID(int epicIDtoRemove) {
         super.removeEpicByID(epicIDtoRemove);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeAllSubtasksInEpic(int epicIDtoRemoveSubtask) {
         super.removeAllSubtasksInEpic(epicIDtoRemoveSubtask);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void createSubtask(SubTask subTask) {
         super.createSubtask(subTask);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void updateSubtask(SubTask newSubTask) {
         super.updateSubtask(newSubTask);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeSubtaskByID(int subtaskIDtoRemove) {
         super.removeSubtaskByID(subtaskIDtoRemove);
-        save();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
     @Override
     public void removeAllSubtasks() {
         super.removeAllSubtasks();
+        try {
+            save();
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 }
