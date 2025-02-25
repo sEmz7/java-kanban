@@ -1,8 +1,5 @@
 package tasks;
 
-import manager.FileBackedTaskManager;
-import manager.TaskManager;
-
 import java.util.Objects;
 
 public class Task {
