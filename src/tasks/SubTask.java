@@ -3,7 +3,6 @@ package tasks;
 public class SubTask extends Epic {
     protected int epicID;
 
-
     public SubTask(String taskName, String description, TaskStatus taskStatus) {
         super(taskName, description, taskStatus);
     }
