@@ -32,13 +32,13 @@ public class FileBackedTaskManagerTest {
         clearFile(path);
 
         manager.loadFromFile(new File("src/data.txt"));
-        Task task1 = new Task("task1",  "desc1", TaskStatus.NEW);
+        Task task1 = new Task("task1", "desc1", TaskStatus.NEW);
         manager.createTask(task1);
         List<String> list = null;
 
         try (BufferedReader br = new BufferedReader(new FileReader("src/data.txt"))) {
             list = new ArrayList<>();
-            while(br.ready()) {
+            while (br.ready()) {
                 String line = br.readLine();
                 list.add(line);
             }
