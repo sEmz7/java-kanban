@@ -1,5 +1,4 @@
 import manager.FileBackedTaskManager;
-import manager.Managers;
 import manager.TaskManager;
 import tasks.Task;
 import tasks.TaskStatus;
@@ -9,8 +8,8 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
 
-        FileBackedTaskManager manager = Managers.getDefaultFileBackedTaskManager();
-        manager.loadFromFile(new File("src/data.txt"));
+
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("src/data.txt"));
 
         Task task5 = new Task("5", "6", TaskStatus.NEW);
         manager.createTask(task5);
@@ -18,6 +17,8 @@ public class Main {
         manager.createTask(task6);
         Task task7 = new Task("5", "6", TaskStatus.NEW);
         manager.createTask(task7);
+
+        printAllTasks(manager);
 
     }
 
