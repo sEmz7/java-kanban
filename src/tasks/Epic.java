@@ -29,12 +29,4 @@ public class Epic extends Task {
     public void setSubTasks(ArrayList<SubTask> subTasks) {
         this.subTasks = subTasks;
     }
-
-    @Override
-    public String toString() {
-        return "\nТип задачи: Эпик" +
-                "\nID эпика: " + taskID +
-                "\nНазвание эпика: " + taskName +
-                "\nСтатус эпика: " + taskStatus;
-    }
 }

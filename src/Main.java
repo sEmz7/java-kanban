@@ -1,44 +1,22 @@
-import manager.Managers;
+import manager.FileBackedTaskManager;
 import manager.TaskManager;
-import tasks.Epic;
-import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
+
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
 
-        /*                    Проверка истории                    */
 
-        TaskManager manager = Managers.getDefaultTaskManager();
-        Task task1 = new Task("# Task 1", "Description 1", TaskStatus.NEW);
-        manager.createTask(task1);
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("src/data.txt"));
 
-        Task task2 = new Task("# Task 2", "Description 2", TaskStatus.NEW);
-        manager.createTask(task2);
-
-        Epic epic1 = new Epic("# Epic 1", "Desc 1", TaskStatus.NEW);
-        manager.createEpic(epic1);
-
-        SubTask subTask1 = new SubTask("# Subtask 1", "Desc1", TaskStatus.NEW);
-        subTask1.setEpicID(epic1.getTaskID());
-        manager.createSubtask(subTask1);
-
-        SubTask subTask2 = new SubTask("# Subtask 2", "Desc2", TaskStatus.NEW);
-        subTask2.setEpicID(epic1.getTaskID());
-        manager.createSubtask(subTask2);
-
-        Epic epic2 = new Epic("# Epic 2", "Desc 2", TaskStatus.NEW);
-        manager.createEpic(epic2);
-
-        manager.getSubtaskByID(subTask1.getTaskID());
-        manager.getTaskByID(task1.getTaskID());
-        manager.getEpicByID(epic1.getTaskID());
-        manager.getSubtaskByID(subTask1.getTaskID());
-        manager.getEpicByID(epic2.getTaskID());
-        manager.getTaskByID(task2.getTaskID());
-        manager.getTaskByID(task1.getTaskID());
-        manager.removeEpicByID(epic1.getTaskID());
+        Task task5 = new Task("5", "6", TaskStatus.NEW);
+        manager.createTask(task5);
+        Task task6 = new Task("5", "6", TaskStatus.NEW);
+        manager.createTask(task6);
+        Task task7 = new Task("5", "6", TaskStatus.NEW);
+        manager.createTask(task7);
 
         printAllTasks(manager);
 
