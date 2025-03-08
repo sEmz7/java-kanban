@@ -1,18 +1,32 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
     protected String taskName;
     protected String description;
+    protected Duration duration = Duration.ofMinutes(0);
+    protected LocalDateTime startTime = LocalDateTime.parse("9999:11:11 11:11:11", formatter);
+    protected TaskStatus taskStatus;
 
     protected int taskID;
-    protected TaskStatus taskStatus;
 
     public Task(String taskName, String description, TaskStatus taskStatus) {
         this.taskName = taskName;
         this.description = description;
         this.taskStatus = taskStatus;
+    }
+
+    public Task(String taskName, String description, TaskStatus taskStatus, Duration duration, LocalDateTime startTime) {
+        this.taskName = taskName;
+        this.description = description;
+        this.taskStatus = taskStatus;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     protected Task(Integer taskID, String taskName, String description, TaskStatus taskStatus) {
@@ -22,8 +36,20 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public Task getSnapshot() {
         return new Task(this.getTaskID(), this.getTaskName(), this.getDescription(), this.getTaskStatus());
+    }
+
+    public DateTimeFormatter getFormatter() {
+        return formatter;
     }
 
     public void setTaskID(int taskID) {
@@ -58,6 +84,18 @@ public class Task {
         return taskID;
     }
 
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,6 +115,8 @@ public class Task {
     @Override
     public String toString() {
         return taskID + "," + this.getClass().getSimpleName() +
-                "," + taskName + "," + taskStatus + "," + description + ",";
+                "," + taskName + "," + taskStatus + "," + description +
+                "," + duration.toMinutes() + "," + startTime.format(formatter) +
+                "," + getEndTime().format(formatter) + ",";
     }
 }

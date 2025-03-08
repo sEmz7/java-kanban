@@ -2,6 +2,8 @@ package manager;
 
 import tasks.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +47,26 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setTaskStatus(TaskStatus.IN_PROGRESS);
             }
         }
+        updateEpicDateTime(epic);
+    }
+
+    private void updateEpicDateTime(Epic epic) {
+        ArrayList<SubTask> epicSubtasks = epic.getSubTasks();
+        Duration duration = Duration.ofMinutes(0);
+        LocalDateTime startTime = LocalDateTime.of(9999, 12, 12, 12, 12);
+        LocalDateTime endTime = LocalDateTime.of(1, 12, 12, 12, 12);
+        for (SubTask subTask : epicSubtasks) {
+            duration = duration.plusMinutes(subTask.getDuration().toMinutes());
+            if (startTime.isAfter(subTask.getStartTime())) {
+                startTime = subTask.getStartTime();
+            }
+            if (endTime.isBefore(subTask.getEndTime())) {
+                endTime = subTask.getEndTime();
+            }
+        }
+        epic.setDuration(duration);
+        epic.setStartTime(startTime);
+        epic.setEndTime(endTime);
     }
 
     @Override
