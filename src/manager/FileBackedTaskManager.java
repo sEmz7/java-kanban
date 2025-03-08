@@ -17,9 +17,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
 
+    public boolean checkIntersection(Task newTask, Task task) {
+        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
+        LocalDateTime newTaskEndTime = newTask.getEndTime();
+        if (newTaskStartTime.isAfter(task.getEndTime()) || newTaskEndTime.isBefore(task.getStartTime().get())) {
+            return false;
+        }
+        return true;
+    }
+
     public void savePrioritizedTask(Task task) {
         if (task.getStartTime().isPresent()) {
-            prioritizedTasks.add(task);
+            List<Task> tasks = getPrioritizedTasks();
+            boolean isIntersected = tasks.stream()
+                            .anyMatch(existingTask -> checkIntersection(existingTask, task));
+            if (!isIntersected) {
+                prioritizedTasks.add(task);
+            }
         }
     }
 
