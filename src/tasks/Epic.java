@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    protected LocalDateTime endTime = LocalDateTime.parse("0001:11:11 11:11:11", formatter);
+    protected LocalDateTime endTime;
 
     protected ArrayList<SubTask> subTasks = new ArrayList<>();
 
@@ -37,15 +37,6 @@ public class Epic extends Task {
 
     @Override
     public LocalDateTime getEndTime() {
-        for (SubTask subTask : subTasks) {
-            duration = duration.plusMinutes(subTask.getDuration().toMinutes());
-            if (startTime.isAfter(subTask.getStartTime())) {
-                startTime = subTask.getStartTime();
-            }
-            if (endTime.isBefore(subTask.getEndTime())) {
-                endTime = subTask.getEndTime();
-            }
-        }
         return endTime;
     }
 
@@ -63,8 +54,13 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
+        if (getStartTime().isPresent()) {
+            return taskID + "," + this.getClass().getSimpleName() +
+                    "," + taskName + "," + taskStatus + "," + description +
+                    "," + duration.toMinutes() + "," + startTime.format(formatter) + "," + endTime.format(formatter) + ",";
+        }
         return taskID + "," + this.getClass().getSimpleName() +
                 "," + taskName + "," + taskStatus + "," + description +
-                "," + duration.toMinutes() + "," + startTime.format(formatter) + "," + endTime.format(formatter) + ",";
+                ",";
     }
 }

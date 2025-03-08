@@ -4,13 +4,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Task {
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
     protected String taskName;
     protected String description;
-    protected Duration duration = Duration.ofMinutes(0);
-    protected LocalDateTime startTime = LocalDateTime.parse("9999:11:11 11:11:11", formatter);
+    protected Duration duration;
+    protected LocalDateTime startTime;
     protected TaskStatus taskStatus;
 
     protected int taskID;
@@ -92,8 +93,8 @@ public class Task {
         return duration;
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
+    public Optional<LocalDateTime> getStartTime() {
+        return Optional.ofNullable(startTime);
     }
 
     @Override
@@ -114,9 +115,15 @@ public class Task {
 
     @Override
     public String toString() {
+        if (getStartTime().isPresent()) {
+            return taskID + "," + this.getClass().getSimpleName() +
+                    "," + taskName + "," + taskStatus + "," + description +
+                    "," + duration.toMinutes() + "," + startTime.format(formatter) +
+                    "," + getEndTime().format(formatter) + ",";
+        }
         return taskID + "," + this.getClass().getSimpleName() +
                 "," + taskName + "," + taskStatus + "," + description +
-                "," + duration.toMinutes() + "," + startTime.format(formatter) +
-                "," + getEndTime().format(formatter) + ",";
+                ",";
+
     }
 }

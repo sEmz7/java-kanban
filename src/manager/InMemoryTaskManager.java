@@ -4,15 +4,15 @@ import tasks.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskCount = 0;
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final HashMap<Integer, SubTask> subtasks = new HashMap<>();
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(t -> t.getStartTime().get()));
 
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
 
@@ -56,12 +56,14 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime startTime = LocalDateTime.of(9999, 12, 12, 12, 12);
         LocalDateTime endTime = LocalDateTime.of(1, 12, 12, 12, 12);
         for (SubTask subTask : epicSubtasks) {
-            duration = duration.plusMinutes(subTask.getDuration().toMinutes());
-            if (startTime.isAfter(subTask.getStartTime())) {
-                startTime = subTask.getStartTime();
-            }
-            if (endTime.isBefore(subTask.getEndTime())) {
-                endTime = subTask.getEndTime();
+            if (subTask.getStartTime().isPresent()) {
+                duration = duration.plusMinutes(subTask.getDuration().toMinutes());
+                if (startTime.isAfter(subTask.getStartTime().get())) {
+                    startTime = subTask.getStartTime().get();
+                }
+                if (endTime.isBefore(subTask.getEndTime())) {
+                    endTime = subTask.getEndTime();
+                }
             }
         }
         epic.setDuration(duration);

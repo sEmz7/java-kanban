@@ -15,15 +15,21 @@ public class Main {
 
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("src/data.txt"));
 
-        Task task5 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(55),
-                LocalDateTime.of(2025, 12, 12, 12, 12));
-        manager.createTask(task5);
-        Task task6 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(155),
-                LocalDateTime.of(2077, 7, 10, 10, 10));
-        manager.createTask(task6);
-        Task task7 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(120),
-                LocalDateTime.of(2022, 3, 11, 11, 11));
-        manager.createTask(task7);
+//        Task task5 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(55),
+//                LocalDateTime.of(2025, 12, 12, 12, 12));
+//        manager.createTask(task5);
+//        Task task6 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(155),
+//                LocalDateTime.of(2077, 7, 10, 10, 10));
+//        manager.createTask(task6);
+//        Task task7 = new Task("5", "6", TaskStatus.NEW, Duration.ofMinutes(120),
+//                LocalDateTime.of(2022, 3, 11, 11, 11));
+//        manager.createTask(task7);
+//
+//        Task task8 = new Task("8", "8", TaskStatus.NEW);
+//        manager.createTask(task8);
+
+
+
 
         Epic epic1 = new Epic("ep1", "epdes1", TaskStatus.NEW);
         manager.createEpic(epic1);
@@ -40,7 +46,17 @@ public class Main {
         sub3.setEpicID(epic1.getTaskID());
         manager.createSubtask(sub3);
 
+
+        SubTask sub4 = new SubTask("4", "4", TaskStatus.NEW);
+        sub4.setEpicID(epic1.getTaskID());
+        manager.createSubtask(sub4);
+
+
         printAllTasks(manager);
+
+        System.out.println("Отсортированные по приоритету:");
+        manager.getPrioritizedTasks().forEach(System.out::println);
+
 
     }
 
@@ -62,9 +78,11 @@ public class Main {
             System.out.println(subtask);
         }
 
-        System.out.println("\n\n\t\t\tИстория:\n\n");
-        for (Task task : manager.getHistory()) {
-            System.out.println(task);
-        }
+        System.out.println("\n");
+
+//        System.out.println("\n\n\t\t\tИстория:\n\n");
+//        for (Task task : manager.getHistory()) {
+//            System.out.println(task);
+//        }
     }
 }

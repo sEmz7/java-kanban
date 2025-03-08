@@ -38,9 +38,14 @@ public class SubTask extends Epic {
 
     @Override
     public String toString() {
+        if (getStartTime().isPresent()) {
+            return taskID + "," + this.getClass().getSimpleName() +
+                    "," + taskName + "," + taskStatus + "," + description +
+                    "," + epicID + "," + duration.toMinutes() + "," + startTime.format(formatter) +
+                    "," + endTime.format(formatter) + ",";
+        }
         return taskID + "," + this.getClass().getSimpleName() +
                 "," + taskName + "," + taskStatus + "," + description +
-                "," + epicID + "," + duration.toMinutes() + "," + startTime.format(formatter) +
-                "," + endTime.format(formatter) + ",";
+                "," + epicID + ",";
     }
 }
