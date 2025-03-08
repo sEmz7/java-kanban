@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
 
@@ -30,12 +31,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         if (task.getStartTime().isPresent()) {
             List<Task> tasks = getPrioritizedTasks();
             boolean isIntersected = tasks.stream()
-                            .anyMatch(existingTask -> checkIntersection(existingTask, task));
+                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
             if (!isIntersected) {
                 prioritizedTasks.add(task);
             }
         }
     }
+
+    public void removeEpicInPrioritizedTasks(int epicId) {
+        prioritizedTasks.removeIf(task -> task.getTaskID() == epicId);
+        ArrayList<SubTask> epicSubtasks = epics.get(epicId).getSubTasks();
+        prioritizedTasks.removeIf(epicSubtasks::contains);
+    }
+
 
     public void removePrioritizedTask(Task task) {
         prioritizedTasks.remove(task);
@@ -168,6 +176,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public void removeEpicByID(int epicIDtoRemove) {
+        removeEpicInPrioritizedTasks(epicIDtoRemove);
         super.removeEpicByID(epicIDtoRemove);
         save();
     }

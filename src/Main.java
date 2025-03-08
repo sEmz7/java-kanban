@@ -42,7 +42,7 @@ public class Main {
         sub2.setEpicID(epic1.getTaskID());
         manager.createSubtask(sub2);
 
-        /** Не будет добавлена, так как пересекается по времени **/
+        /** Не будет добавлена в отсортированный список, так как пересекается по времени **/
         SubTask sub3 = new SubTask("sub3", "sub3", TaskStatus.NEW, Duration.ofMinutes(55),
                 LocalDateTime.of(2007, 10, 7, 8, 30), LocalDateTime.of(2010, 12, 12, 12, 12));
         sub3.setEpicID(epic1.getTaskID());
@@ -51,7 +51,6 @@ public class Main {
         SubTask sub4 = new SubTask("4", "4", TaskStatus.NEW);
         sub4.setEpicID(epic1.getTaskID());
         manager.createSubtask(sub4);
-
 
         printAllTasks(manager);
 

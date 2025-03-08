@@ -5,6 +5,7 @@ import tasks.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskCount = 0;
@@ -162,12 +163,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpicByID(int epicIDtoRemove) {
         ArrayList<SubTask> arrayOfSubtasks = epics.get(epicIDtoRemove).getSubTasks();
-        for (SubTask subTask : arrayOfSubtasks) {
-            if (subTask.getEpicID() == epicIDtoRemove) {
-                subtasks.remove(subTask.getTaskID());
-                historyManager.remove(subTask.getTaskID());
-            }
-        }
+//        for (SubTask subTask : arrayOfSubtasks) {
+//            if (subTask.getEpicID() == epicIDtoRemove) {
+//                subtasks.remove(subTask.getTaskID());
+//                historyManager.remove(subTask.getTaskID());
+//            }
+//        }
+        arrayOfSubtasks.stream()
+                .filter(subTask -> subTask.getEpicID() == epicIDtoRemove)  // Фильтруем подзадачи по epicID
+                .forEach(subTask -> {
+                    subtasks.remove(subTask.getTaskID());  // Удаляем из списка подзадач
+                    historyManager.remove(subTask.getTaskID());  // Удаляем из истории
+                });
         epics.remove(epicIDtoRemove);
         historyManager.remove(epicIDtoRemove);
     }
@@ -185,12 +192,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllSubtasksInEpic(int epicIDtoRemoveSubtask) {
         ArrayList<SubTask> arrayOfSubtasks = epics.get(epicIDtoRemoveSubtask).getSubTasks();
-        for (SubTask subTask : arrayOfSubtasks) {
-            if (subTask.getEpicID() == epicIDtoRemoveSubtask) {
-                subtasks.remove(subTask.getTaskID());
-            }
-        }
+        List<SubTask> filteredSubtasks =  arrayOfSubtasks.stream()
+                .filter(subTask -> subTask.getEpicID() == epicIDtoRemoveSubtask)
+                .toList();
         epics.get(epicIDtoRemoveSubtask).setSubTasks(new ArrayList<>());
+        filteredSubtasks.forEach(subTask -> subtasks.remove(subTask.getTaskID()));
         updateEpicStatus(epics.get(epicIDtoRemoveSubtask));
     }
 
