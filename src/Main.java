@@ -28,9 +28,6 @@ public class Main {
         Task task8 = new Task("8", "8", TaskStatus.NEW);
         manager.createTask(task8);
 
-
-
-
         Epic epic1 = new Epic("ep1", "epdes1", TaskStatus.NEW);
         manager.createEpic(epic1);
         SubTask sub1 = new SubTask("sub1", "sub1", TaskStatus.NEW, Duration.ofMinutes(155),
