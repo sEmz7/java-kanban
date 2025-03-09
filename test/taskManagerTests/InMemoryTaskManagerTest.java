@@ -1,22 +1,19 @@
-package TaskManager;
+package taskManagerTests;
 
-import manager.Managers;
-import manager.TaskManager;
+import manager.InMemoryTaskManager;
+import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class InMemoryTaskManagerTest {
-    static TaskManager manager;
-
-    @BeforeEach
-    void beforeEach() {
-        manager = Managers.getDefaultTaskManager();
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+    @Override
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
     }
 
     @Test
@@ -48,5 +45,4 @@ class InMemoryTaskManagerTest {
         assertNotEquals(taskManualID.getTaskID(), taskGeneratedID.getTaskID());
         assertEquals(taskGeneratedID, manager.getTaskByID(taskGeneratedID.getTaskID()));
     }
-
 }
