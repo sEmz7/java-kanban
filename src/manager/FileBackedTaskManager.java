@@ -131,6 +131,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void createTask(Task task) {
         super.createTask(task);
         save();
+
         savePrioritizedTask(task);
     }
 
@@ -192,6 +193,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void createSubtask(SubTask subTask) {
         super.createSubtask(subTask);
         save();
+
         savePrioritizedTask(subTask);
     }
 
