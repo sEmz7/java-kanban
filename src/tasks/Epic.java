@@ -31,17 +31,30 @@ public class Epic extends Task {
         return new ArrayList<>(subTasks);
     }
 
-    public TaskStatus getTaskStatus() {
-        return this.taskStatus;
+    public void updateEndTime() {
+        Duration duration = Duration.ofMinutes(0);
+        LocalDateTime startTime = LocalDateTime.of(9999, 12, 12, 12, 12);
+        LocalDateTime endTime = LocalDateTime.of(1, 12, 12, 12, 12);
+        for (SubTask subTask : subTasks) {
+            if (subTask.getStartTime().isPresent()) { // Не понимаю как тут использовать ifPresent(),
+                // я же не смогу прибавлять к duration минуты в консюмере, поскольку будет ошибка так как duration не effectively final или final
+                duration = duration.plusMinutes(subTask.getDuration().toMinutes());
+                if (startTime.isAfter(subTask.getStartTime().get())) {
+                    startTime = subTask.getStartTime().get();
+                }
+                if (endTime.isBefore(subTask.getEndTime())) {
+                    endTime = subTask.getEndTime();
+                }
+            }
+        }
+        this.duration = duration;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     @Override
     public LocalDateTime getEndTime() {
         return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
     }
 
     public Epic getSnapshot() {
@@ -54,13 +67,17 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        if (getStartTime().isPresent()) {
-            return taskID + "," + this.getClass().getSimpleName() +
-                    "," + taskName + "," + taskStatus + "," + description +
-                    "," + duration.toMinutes() + "," + startTime.format(formatter) + "," + endTime.format(formatter) + ",";
-        }
-        return taskID + "," + this.getClass().getSimpleName() +
-                "," + taskName + "," + taskStatus + "," + description +
-                ",";
+        StringBuilder result = new StringBuilder();
+        result.append(taskID + "," + this.getClass().getSimpleName() +
+                "," + taskName + "," + taskStatus + "," + description);
+        getStartTime().ifPresentOrElse(
+                startTime -> {
+                    result.append("," + duration.toMinutes() + "," + startTime.format(formatter) + "," + endTime.format(formatter) + ",");
+                },
+                () -> {
+                    result.append(",");
+                }
+        );
+        return result.toString();
     }
 }

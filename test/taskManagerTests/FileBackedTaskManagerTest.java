@@ -2,9 +2,12 @@ package taskManagerTests;
 
 import exceptions.ManagerSaveException;
 import manager.FileBackedTaskManager;
+import manager.Managers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tasks.Epic;
+import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
 
@@ -26,15 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private final Path path = Paths.get("src/data.txt");
 
-    @Override
-    protected FileBackedTaskManager createTaskManager() {
-        return new FileBackedTaskManager();
-    }
-
-    @Override
     @BeforeEach
     void setup() {
-        super.setup();
+        manager = Managers.getDefaultFileBackedTaskManager();
         clearFile();
     }
 
@@ -89,7 +86,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @Test
     public void testManagerSaveException() {
         assertThrows(ManagerSaveException.class, () -> {
-            FileBackedTaskManager.fromString("aaa,aaa"); // Деление на ноль
+            FileBackedTaskManager.fromString("aaa,aaa");
         }, "Нету типа задачи (aaa) ");
     }
 }

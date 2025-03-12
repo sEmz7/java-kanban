@@ -2,8 +2,6 @@ package manager;
 
 import tasks.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -47,28 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setTaskStatus(TaskStatus.IN_PROGRESS);
             }
         }
-        updateEpicDateTime(epic);
-    }
-
-    private void updateEpicDateTime(Epic epic) {
-        ArrayList<SubTask> epicSubtasks = epic.getSubTasks();
-        Duration duration = Duration.ofMinutes(0);
-        LocalDateTime startTime = LocalDateTime.of(9999, 12, 12, 12, 12);
-        LocalDateTime endTime = LocalDateTime.of(1, 12, 12, 12, 12);
-        for (SubTask subTask : epicSubtasks) {
-            if (subTask.getStartTime().isPresent()) {
-                duration = duration.plusMinutes(subTask.getDuration().toMinutes());
-                if (startTime.isAfter(subTask.getStartTime().get())) {
-                    startTime = subTask.getStartTime().get();
-                }
-                if (endTime.isBefore(subTask.getEndTime())) {
-                    endTime = subTask.getEndTime();
-                }
-            }
-        }
-        epic.setDuration(duration);
-        epic.setStartTime(startTime);
-        epic.setEndTime(endTime);
+        epic.updateEndTime();
     }
 
     @Override
@@ -162,17 +139,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpicByID(int epicIDtoRemove) {
         ArrayList<SubTask> arrayOfSubtasks = epics.get(epicIDtoRemove).getSubTasks();
-//        for (SubTask subTask : arrayOfSubtasks) {
-//            if (subTask.getEpicID() == epicIDtoRemove) {
-//                subtasks.remove(subTask.getTaskID());
-//                historyManager.remove(subTask.getTaskID());
-//            }
-//        }
         arrayOfSubtasks.stream()
-                .filter(subTask -> subTask.getEpicID() == epicIDtoRemove)  // Фильтруем подзадачи по epicID
+                .filter(subTask -> subTask.getEpicID() == epicIDtoRemove)
                 .forEach(subTask -> {
-                    subtasks.remove(subTask.getTaskID());  // Удаляем из списка подзадач
-                    historyManager.remove(subTask.getTaskID());  // Удаляем из истории
+                    subtasks.remove(subTask.getTaskID());
+                    historyManager.remove(subTask.getTaskID());
                 });
         epics.remove(epicIDtoRemove);
         historyManager.remove(epicIDtoRemove);

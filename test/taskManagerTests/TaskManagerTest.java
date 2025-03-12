@@ -1,7 +1,6 @@
 package taskManagerTests;
 
 import manager.TaskManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.SubTask;
@@ -12,13 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class TaskManagerTest<T extends TaskManager> {
 
     protected T manager;
-
-    @BeforeEach
-    void setup() {
-        manager = createTaskManager();
-    }
-
-    protected abstract T createTaskManager();
 
     @Test
     void subtasksShouldBeConnectedToEpic() {
@@ -39,14 +31,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void epicStatusShouldChange() {
-        Epic epic = new Epic("Epic 1", "Desc 1", TaskStatus.NEW);
+        Epic epic = new Epic("Epic1", "Epic description", TaskStatus.NEW);
         manager.createEpic(epic);
 
-        SubTask subTask1 = new SubTask("Sub 1", "Desc sub 1", TaskStatus.NEW);
+        SubTask subTask1 = new SubTask("SubTask1", "Description 1", TaskStatus.NEW);
         subTask1.setEpicID(epic.getTaskID());
         manager.createSubtask(subTask1);
 
-        SubTask subTask2 = new SubTask("Sub 2", "Desc sub 2", TaskStatus.NEW);
+        SubTask subTask2 = new SubTask("SubTask2", "Description 2", TaskStatus.NEW);
         subTask2.setEpicID(epic.getTaskID());
         manager.createSubtask(subTask2);
 
