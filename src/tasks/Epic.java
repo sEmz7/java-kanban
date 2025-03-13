@@ -3,6 +3,7 @@ package tasks;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     protected LocalDateTime endTime;
@@ -32,24 +33,19 @@ public class Epic extends Task {
     }
 
     public void updateEndTime() {
-        Duration duration = Duration.ofMinutes(0);
-        LocalDateTime startTime = LocalDateTime.of(9999, 12, 12, 12, 12);
-        LocalDateTime endTime = LocalDateTime.of(1, 12, 12, 12, 12);
-        for (SubTask subTask : subTasks) {
-            if (subTask.getStartTime().isPresent()) { // Не понимаю как тут использовать ifPresent(),
-                // я же не смогу прибавлять к duration минуты в консюмере, поскольку будет ошибка так как duration не effectively final или final
-                duration = duration.plusMinutes(subTask.getDuration().toMinutes());
-                if (startTime.isAfter(subTask.getStartTime().get())) {
-                    startTime = subTask.getStartTime().get();
-                }
-                if (endTime.isBefore(subTask.getEndTime())) {
-                    endTime = subTask.getEndTime();
-                }
-            }
+        if (!subTasks.isEmpty()) {
+            this.duration = this.subTasks.stream()
+                    .map(SubTask::getDuration)
+                    .filter(subtaskDuration -> !Objects.isNull(subtaskDuration))
+                    .reduce(Duration.ZERO, Duration::plus);
+            this.startTime = this.subTasks.stream()
+                    .flatMap(subtask -> subtask.getStartTime().stream())
+                    .reduce(LocalDateTime.MAX, (lhs, rhs) -> lhs.isAfter(rhs) ? rhs : lhs);
+            this.endTime = this.subTasks.stream()
+                    .filter(subTask -> subTask.getStartTime().isPresent())
+                    .map(Epic::getEndTime)
+                    .reduce(LocalDateTime.MIN, (lhs, rhs) -> lhs.isBefore(rhs) ? rhs : lhs);
         }
-        this.duration = duration;
-        this.startTime = startTime;
-        this.endTime = endTime;
     }
 
     @Override
