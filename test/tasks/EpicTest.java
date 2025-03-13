@@ -98,4 +98,72 @@ class EpicTest {
 
     }
 
+    @Test
+    void epicShouldBeNewIfAllSubtasksNew() {
+        Epic epic = new Epic("1", "1", TaskStatus.NEW);
+        manager.createEpic(epic);
+        SubTask subTask1 = new SubTask("sub1", "desc1", TaskStatus.NEW);
+        subTask1.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask1);
+        SubTask subTask2 = new SubTask("sub12", "desc2", TaskStatus.NEW);
+        subTask2.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask2);
+        SubTask subTask3 = new SubTask("sub3", "desc3", TaskStatus.NEW);
+        subTask3.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask3);
+
+        assertEquals(TaskStatus.NEW, epic.getTaskStatus());
+    }
+
+    @Test
+    void epicShouldBeDoneIfAllSubtasksDone() {
+        Epic epic = new Epic("1", "1", TaskStatus.NEW);
+        manager.createEpic(epic);
+        SubTask subTask1 = new SubTask("sub1", "desc1", TaskStatus.DONE);
+        subTask1.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask1);
+        SubTask subTask2 = new SubTask("sub12", "desc2", TaskStatus.DONE);
+        subTask2.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask2);
+        SubTask subTask3 = new SubTask("sub3", "desc3", TaskStatus.DONE);
+        subTask3.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask3);
+
+        assertEquals(TaskStatus.DONE, epic.getTaskStatus());
+    }
+
+    @Test
+    void epicShouldBeInProgressIfAllSubtasksDoneOrNew() {
+        Epic epic = new Epic("1", "1", TaskStatus.NEW);
+        manager.createEpic(epic);
+        SubTask subTask1 = new SubTask("sub1", "desc1", TaskStatus.DONE);
+        subTask1.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask1);
+        SubTask subTask2 = new SubTask("sub12", "desc2", TaskStatus.NEW);
+        subTask2.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask2);
+        SubTask subTask3 = new SubTask("sub3", "desc3", TaskStatus.NEW);
+        subTask3.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask3);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getTaskStatus());
+    }
+
+    @Test
+    void epicShouldBeInProgressIfAllSubtasksInProgress() {
+        Epic epic = new Epic("1", "1", TaskStatus.NEW);
+        manager.createEpic(epic);
+        SubTask subTask1 = new SubTask("sub1", "desc1", TaskStatus.IN_PROGRESS);
+        subTask1.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask1);
+        SubTask subTask2 = new SubTask("sub12", "desc2", TaskStatus.IN_PROGRESS);
+        subTask2.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask2);
+        SubTask subTask3 = new SubTask("sub3", "desc3", TaskStatus.IN_PROGRESS);
+        subTask3.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask3);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getTaskStatus());
+    }
+
 }

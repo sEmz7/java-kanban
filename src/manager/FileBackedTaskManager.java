@@ -7,8 +7,47 @@ import tasks.Task;
 import tasks.TaskStatus;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
+
+    private boolean checkIntersection(Task newTask, Task task) {
+        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
+        LocalDateTime newTaskEndTime = newTask.getEndTime();
+        return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
+    }
+
+    public void savePrioritizedTask(Task task) {
+        task.getStartTime().ifPresent(startTime -> {
+            List<Task> tasks = getPrioritizedTasks();
+            boolean isIntersected = tasks.stream()
+                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
+            if (!isIntersected) {
+                prioritizedTasks.add(task);
+            }
+        });
+    }
+
+    public void removeEpicInPrioritizedTasks(int epicId) {
+        prioritizedTasks.removeIf(task -> task.getTaskID() == epicId);
+        ArrayList<SubTask> epicSubtasks = epics.get(epicId).getSubTasks();
+        prioritizedTasks.removeIf(epicSubtasks::contains);
+    }
+
+
+    public void removePrioritizedTask(Task task) {
+        prioritizedTasks.remove(task);
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
 
     public static FileBackedTaskManager loadFromFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -53,13 +92,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String[] taskParts = value.split(",");
         switch (taskParts[1]) {
             case "Task" -> {
-                return new Task(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                if (taskParts.length == 5) {
+                    return new Task(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                }
+                return new Task(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]),
+                        Duration.ofMinutes(Long.parseLong(taskParts[5])), LocalDateTime.parse(taskParts[6], formatter));
             }
             case "Epic" -> {
-                return new Epic(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                if (taskParts.length == 5) {
+                    return new Epic(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                }
+                return new Epic(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]),
+                        Duration.ofMinutes(Long.parseLong(taskParts[5])), LocalDateTime.parse(taskParts[6], formatter),
+                        LocalDateTime.parse(taskParts[7], formatter));
             }
             case "SubTask" -> {
-                SubTask subTask = new SubTask(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                if (taskParts.length == 6) {
+                    SubTask subTask = new SubTask(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]));
+                    subTask.setEpicID(Integer.parseInt(taskParts[5]));
+                    return subTask;
+                }
+                SubTask subTask = new SubTask(taskParts[2], taskParts[4], TaskStatus.valueOf(taskParts[3]),
+                        Duration.ofMinutes(Long.parseLong(taskParts[6])), LocalDateTime.parse(taskParts[7], formatter),
+                        LocalDateTime.parse(taskParts[8], formatter));
                 subTask.setEpicID(Integer.parseInt(taskParts[5]));
                 return subTask;
             }
@@ -73,10 +128,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void createTask(Task task) {
         super.createTask(task);
         save();
+
+        savePrioritizedTask(task);
     }
 
     @Override
     public void removeAllTasks() {
+        prioritizedTasks
+                .removeIf(task -> task.getClass().getSimpleName().equals("Task"));
         super.removeAllTasks();
         save();
     }
@@ -89,6 +148,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public void removeTaskByID(int idToRemove) {
+        removePrioritizedTask(tasks.get(idToRemove));
         super.removeTaskByID(idToRemove);
         save();
     }
@@ -113,12 +173,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public void removeEpicByID(int epicIDtoRemove) {
+        removeEpicInPrioritizedTasks(epicIDtoRemove);
         super.removeEpicByID(epicIDtoRemove);
         save();
     }
 
     @Override
     public void removeAllSubtasksInEpic(int epicIDtoRemoveSubtask) {
+        prioritizedTasks
+                .removeIf(subtask -> epics.get(epicIDtoRemoveSubtask).getSubTasks().contains(subtask));
         super.removeAllSubtasksInEpic(epicIDtoRemoveSubtask);
         save();
     }
@@ -127,6 +190,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void createSubtask(SubTask subTask) {
         super.createSubtask(subTask);
         save();
+
+        savePrioritizedTask(subTask);
     }
 
     @Override
@@ -137,12 +202,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public void removeSubtaskByID(int subtaskIDtoRemove) {
+        removePrioritizedTask(subtasks.get(subtaskIDtoRemove));
         super.removeSubtaskByID(subtaskIDtoRemove);
         save();
     }
 
     @Override
     public void removeAllSubtasks() {
+        prioritizedTasks
+                .removeIf(task -> task.getClass().getSimpleName().equals("SubTask"));
         super.removeAllSubtasks();
         save();
     }
