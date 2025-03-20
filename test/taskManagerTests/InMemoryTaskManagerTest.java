@@ -1,6 +1,6 @@
 package taskManagerTests;
 
-import manager.InMemoryTaskManager;
+import manager.memory.InMemoryTaskManager;
 import manager.Managers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

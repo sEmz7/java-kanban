@@ -1,5 +1,6 @@
-package manager;
+package manager.memory;
 
+import manager.HistoryManager;
 import tasks.Task;
 
 import java.util.*;

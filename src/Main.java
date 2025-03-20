@@ -1,4 +1,4 @@
-import manager.FileBackedTaskManager;
+import manager.file.FileBackedTaskManager;
 import manager.TaskManager;
 import tasks.Epic;
 import tasks.SubTask;
@@ -53,27 +53,21 @@ public class Main {
 
         System.out.println("Отсортированные по приоритету:");
         manager.getPrioritizedTasks().forEach(System.out::println);
-
-
     }
 
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println(task);
-        }
-        System.out.println("Эпики:");
-        for (Task epic : manager.getAllEpics()) {
-            System.out.println(epic);
+        manager.getAllTasks().forEach(System.out::println);
 
-            for (Task task : manager.getAllSubtasksInEpic(epic.getTaskID())) {
-                System.out.println("--> " + task);
-            }
-        }
-        System.out.println("Подзадачи:");
-        for (Task subtask : manager.getAllSubtasks()) {
-            System.out.println(subtask);
-        }
+        System.out.println("\nЭпики:");
+        manager.getAllEpics().forEach(epic -> {
+            System.out.println(epic);
+            manager.getAllSubtasksInEpic(epic.getTaskID())
+                    .forEach(subTask -> System.out.println("--> " + subTask));
+        });
+
+        System.out.println("\nПодзадачи:");
+        manager.getAllSubtasks().forEach(System.out::println);
 
         System.out.println("\n");
 
