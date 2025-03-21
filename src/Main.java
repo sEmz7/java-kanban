@@ -15,15 +15,21 @@ public class Main {
 
         Epic epic = new Epic("epic1", "desc1", TaskStatus.NEW,
                 Duration.ofMinutes(123),
-                LocalDateTime.of(2025, 12, 12, 12, 12, 12),
-                LocalDateTime.of(2027, 12, 12, 12, 12, 12));
+                LocalDateTime.of(0, 12, 12, 12, 12, 12),
+                LocalDateTime.of(0, 12, 12, 12, 12, 12));
         manager.createEpic(epic);
 
-        SubTask subTask = new SubTask("sub1", "dess1",TaskStatus.NEW, Duration.ofMinutes(44),
+        SubTask subTask1 = new SubTask("sub1", "dess1",TaskStatus.NEW, Duration.ofMinutes(44),
                 LocalDateTime.of(2020, 12, 12, 12, 12, 12),
                 LocalDateTime.of(2077, 11, 11, 11, 11, 11));
-        subTask.setEpicID(epic.getTaskID());
-        manager.createSubtask(subTask);
+        subTask1.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask1);
+
+        SubTask subTask2 = new SubTask("sub2", "dess2",TaskStatus.NEW, Duration.ofMinutes(44),
+                LocalDateTime.of(2097, 12, 12, 12, 12, 12),
+                LocalDateTime.of(2099, 11, 11, 11, 11, 11));
+        subTask2.setEpicID(epic.getTaskID());
+        manager.createSubtask(subTask2);
 
         HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
         httpTaskServer.start();

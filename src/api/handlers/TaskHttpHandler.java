@@ -32,9 +32,8 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 handleDeleteTasks(exchange);
                 break;
             default:
-
+                super.sendNotFound(exchange, "Нет эндпоинта для метода " + exchange.getRequestMethod());
                 break;
-
         }
     }
 

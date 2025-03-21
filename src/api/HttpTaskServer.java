@@ -1,6 +1,7 @@
 package api;
 
 import api.handlers.EpicHttpHandler;
+import api.handlers.SubtaskHttpHandler;
 import api.handlers.TaskHttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import manager.Managers;
@@ -30,6 +31,7 @@ public class HttpTaskServer {
             HttpServer httpServer = HttpServer.create(new InetSocketAddress(serverPort), 0);
             httpServer.createContext("/tasks", new TaskHttpHandler(manager));
             httpServer.createContext("/epics", new EpicHttpHandler(manager));
+            httpServer.createContext("/subtasks", new SubtaskHttpHandler(manager));
             httpServer.start();
             System.out.println("Сервер запущен на порту: " + serverPort);
         } catch (IOException e) {

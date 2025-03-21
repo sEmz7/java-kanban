@@ -30,9 +30,8 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                 handleDeleteEpics(exchange);
                 break;
             default:
-
+                super.sendNotFound(exchange, "Нет эндпоинта для метода " + exchange.getRequestMethod());
                 break;
-
         }
     }
 
