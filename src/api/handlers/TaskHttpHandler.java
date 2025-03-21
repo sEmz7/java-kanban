@@ -8,21 +8,14 @@ import tasks.Task;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager manager;
-    private final Gson gson;
+
 
     public TaskHttpHandler(TaskManager manager) {
         this.manager = manager;
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-                .create();
     }
 
     @Override
@@ -34,10 +27,9 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 break;
             case "POST":
                 handlePostTasks(exchange);
-                // post
                 break;
             case "DELETE":
-                // delete
+                handleDeleteTasks(exchange);
                 break;
             default:
 
@@ -49,7 +41,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetTasks(HttpExchange exchange) throws IOException {
         String[] urlParts = exchange.getRequestURI().getPath().split("/");
         if (urlParts.length == 2) {
-            List<Task> listOfTasks =  manager.getAllTasks();
+            List<Task> listOfTasks = manager.getAllTasks();
             super.sendText(exchange, gson.toJson(listOfTasks));
         } else if (urlParts.length == 3) {
             int taskId;
@@ -63,7 +55,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 }
                 super.sendNotFound(exchange, "Нет задачи с таким id.");
             } catch (NumberFormatException e) {
-                super.sendNotFound(exchange, "Нет задачи с таким id.");
+                super.sendNotFound(exchange, "ID задачи - целое число.");
             }
         }
     }
@@ -75,13 +67,50 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
 
             try {
                 Task task = gson.fromJson(body, Task.class);
-                System.out.println(task);
-                manager.createTask(task);
-                super.sendText(exchange, "Задача добавлена.");
+                if (task.getTaskID() == 0) {
+                    if (manager.getAllTasks().stream()
+                            .anyMatch(existingTask -> !existingTask.equals(task) && manager.checkIntersection(existingTask, task))) {
+                        super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
+                    } else {
+                        manager.createTask(task);
+                        super.sendText(exchange, "Задача добавлена.");
+                    }
+                } else {
+                    if (!manager.taskIsExist(task.getTaskID())) {
+                        super.sendNotFound(exchange, "Нет задачи с таким ID.");
+                    } else {
+                        if (manager.getAllTasks().stream()
+                                .anyMatch(task1 -> !task1.equals(task) && manager.checkIntersection(task1, task))) {
+                            super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
+                        } else {
+                            manager.updateTask(task);
+                            super.sendText(exchange, "Задача обновлена.");
+                        }
+                    }
+                }
             } catch (JsonSyntaxException e) {
-                super.sendNotFound(exchange, "Неверный формат ввода.");
+                super.sendNotFound(exchange, "Неверный формат ввода задачи.");
             }
         }
-        // TODO: Обработать POST /tasks/id
+    }
+
+    private void handleDeleteTasks(HttpExchange exchange) throws IOException {
+        String[] urlParts = exchange.getRequestURI().getPath().split("/");
+
+        if (urlParts.length == 3) {
+            int taskId;
+            try {
+                taskId = Integer.parseInt(urlParts[2]);
+            } catch (NumberFormatException e) {
+                super.sendNotFound(exchange, "ID задачи - целое число.");
+                return;
+            }
+            if (manager.taskIsExist(taskId)) {
+                manager.removeTaskByID(taskId);
+                super.sendText(exchange, "Задача с ID: " + taskId + " была удалена.");
+            } else {
+                super.sendNotFound(exchange, "Нет задачи с таким ID.");
+            }
+        }
     }
 }

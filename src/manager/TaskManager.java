@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface TaskManager {
 
+    boolean checkIntersection(Task newTask, Task task);
+
     ArrayList<Task> getAllTasks();
 
     void removeAllTasks();

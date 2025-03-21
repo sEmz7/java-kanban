@@ -19,13 +19,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
 
-    private boolean checkIntersection(Task newTask, Task task) {
-        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
-        LocalDateTime newTaskEndTime = newTask.getEndTime();
-        return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
-    }
-
-    public void savePrioritizedTask(Task task) {
+    private void savePrioritizedTask(Task task) {
         task.getStartTime().ifPresent(startTime -> {
             List<Task> tasks = getPrioritizedTasks();
             boolean isIntersected = tasks.stream()
@@ -36,14 +30,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         });
     }
 
-    public void removeEpicInPrioritizedTasks(int epicId) {
+    private void removeEpicInPrioritizedTasks(int epicId) {
         prioritizedTasks.removeIf(task -> task.getTaskID() == epicId);
         ArrayList<SubTask> epicSubtasks = epics.get(epicId).getSubTasks();
         prioritizedTasks.removeIf(epicSubtasks::contains);
     }
 
 
-    public void removePrioritizedTask(Task task) {
+    private void removePrioritizedTask(Task task) {
         prioritizedTasks.remove(task);
     }
 

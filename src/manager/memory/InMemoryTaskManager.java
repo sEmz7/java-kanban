@@ -5,6 +5,7 @@ import manager.Managers;
 import manager.TaskManager;
 import tasks.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -14,6 +15,13 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SubTask> subtasks = new HashMap<>();
     protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
             Comparator.comparing(t -> t.getStartTime().get()));
+
+    @Override
+    public boolean checkIntersection(Task newTask, Task task) {
+        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
+        LocalDateTime newTaskEndTime = newTask.getEndTime();
+        return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
+    }
 
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
 

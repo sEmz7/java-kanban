@@ -1,4 +1,127 @@
 package api.handlers;
 
-public class EpicHttpHandler extends BaseHttpHandler {
+import com.google.gson.JsonSyntaxException;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import manager.TaskManager;
+import tasks.Epic;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
+    private final TaskManager manager;
+
+    public EpicHttpHandler(TaskManager manager) {
+        this.manager = manager;
+    }
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        switch (method) {
+            case "GET":
+                handleGetEpics(exchange);
+                break;
+            case "POST":
+                handlePostEpics(exchange);
+                break;
+            case "DELETE":
+                handleDeleteEpics(exchange);
+                break;
+            default:
+
+                break;
+
+        }
+    }
+
+    private void handleGetEpics(HttpExchange exchange) throws IOException {
+        String[] urlParts = exchange.getRequestURI().getPath().split("/");
+
+        if (urlParts.length == 2) {
+            super.sendText(exchange, gson.toJson(manager.getAllEpics()));
+        } else if (urlParts.length == 3) {
+            int epicId;
+            try {
+                epicId = Integer.parseInt(urlParts[2]);
+            } catch (NumberFormatException e) {
+                super.sendNotFound(exchange, "ID эпика - целое число.");
+                return;
+            }
+            if (manager.epicIsExist(epicId)) {
+                String epicJson = gson.toJson(manager.getEpicByID(epicId));
+                super.sendText(exchange, epicJson);
+            } else {
+                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+            }
+        } else if (urlParts.length == 4 && urlParts[3].equals("subtasks")) {
+            int epicId;
+            try {
+                epicId = Integer.parseInt(urlParts[2]);
+            } catch (NumberFormatException e) {
+                super.sendNotFound(exchange, "ID эпика - целое число.");
+                return;
+            }
+            if (manager.epicIsExist(epicId)) {
+                String epicSubtasksJson = gson.toJson(manager.getEpicByID(epicId).getSubTasks());
+                super.sendText(exchange, epicSubtasksJson);
+            } else {
+                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+            }
+        }
+    }
+
+    private void handlePostEpics(HttpExchange exchange) throws IOException {
+        String[] urlParts = exchange.getRequestURI().getPath().split("/");
+        if (urlParts.length == 2) {
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            Epic epic;
+            try {
+                epic = gson.fromJson(body, Epic.class);
+                if (epic.getTaskID() == 0) {
+                    if (manager.getAllEpics().stream()
+                            .anyMatch(epic1 -> !epic1.equals(epic) && manager.checkIntersection(epic1, epic))) {
+                        super.sendHasInteractions(exchange, "Эпик пересекается с существующими.");
+                    } else {
+                        manager.createEpic(epic);
+                        super.sendText(exchange, "Эпик добавлен.");
+                    }
+                } else if (!manager.epicIsExist(epic.getTaskID())) {
+                    super.sendNotFound(exchange, "Нет задачи с таким ID.");
+                } else {
+                    if (manager.getAllEpics().stream()
+                            .anyMatch(epic1 -> !epic1.equals(epic) && manager.checkIntersection(epic1, epic))) {
+                        super.sendHasInteractions(exchange, "Эпик пересекается с существующими.");
+                    } else {
+                        manager.updateEpic(epic);
+                        super.sendText(exchange, "Эпик обновлен.");
+                    }
+                }
+
+            } catch (JsonSyntaxException e) {
+                super.sendNotFound(exchange, "Неверный формат ввода эпика.");
+            }
+        }
+    }
+
+    private void handleDeleteEpics(HttpExchange exchange) throws IOException {
+        String[] urlParts = exchange.getRequestURI().getPath().split("/");
+
+        if (urlParts.length == 3) {
+            int epicId;
+            try {
+                epicId = Integer.parseInt(urlParts[2]);
+            } catch (NumberFormatException e) {
+                super.sendNotFound(exchange, "ID эпика - целое число.");
+                return;
+            }
+            if (manager.epicIsExist(epicId)) {
+                manager.removeEpicByID(epicId);
+                super.sendText(exchange, "Эпик удален.");
+            } else {
+                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+            }
+        }
+    }
 }
