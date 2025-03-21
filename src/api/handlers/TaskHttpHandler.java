@@ -3,6 +3,7 @@ package api.handlers;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.HistoryManager;
 import manager.TaskManager;
 import tasks.Task;
 
@@ -12,10 +13,12 @@ import java.util.List;
 
 public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager manager;
+    private final HistoryManager historyManager;
 
 
-    public TaskHttpHandler(TaskManager manager) {
+    public TaskHttpHandler(TaskManager manager, HistoryManager historyManager) {
         this.manager = manager;
+        this.historyManager = historyManager;
     }
 
     @Override
@@ -49,6 +52,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 Task task = manager.getTaskByID(taskId);
                 if (task != null) {
                     String taskJson = gson.toJson(task);
+                    historyManager.addTask(task);
                     super.sendText(exchange, taskJson);
                     return;
                 }
@@ -72,6 +76,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                         super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
                     } else {
                         manager.createTask(task);
+                        manager.savePrioritizedTask(task);
                         super.sendText(exchange, "Задача добавлена.");
                     }
                 } else {
@@ -106,6 +111,8 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
             }
             if (manager.taskIsExist(taskId)) {
                 manager.removeTaskByID(taskId);
+                historyManager.remove(taskId);
+                manager.removePrioritizedTask(manager.getTaskByID(taskId));
                 super.sendText(exchange, "Задача с ID: " + taskId + " была удалена.");
             } else {
                 super.sendNotFound(exchange, "Нет задачи с таким ID.");

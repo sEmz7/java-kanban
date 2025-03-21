@@ -19,30 +19,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
 
-    private void savePrioritizedTask(Task task) {
-        task.getStartTime().ifPresent(startTime -> {
-            List<Task> tasks = getPrioritizedTasks();
-            boolean isIntersected = tasks.stream()
-                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
-            if (!isIntersected) {
-                prioritizedTasks.add(task);
-            }
-        });
-    }
-
     private void removeEpicInPrioritizedTasks(int epicId) {
         prioritizedTasks.removeIf(task -> task.getTaskID() == epicId);
         ArrayList<SubTask> epicSubtasks = epics.get(epicId).getSubTasks();
         prioritizedTasks.removeIf(epicSubtasks::contains);
-    }
-
-
-    private void removePrioritizedTask(Task task) {
-        prioritizedTasks.remove(task);
-    }
-
-    public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {

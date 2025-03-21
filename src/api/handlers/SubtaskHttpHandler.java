@@ -3,6 +3,7 @@ package api.handlers;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.HistoryManager;
 import manager.TaskManager;
 import tasks.SubTask;
 
@@ -11,9 +12,11 @@ import java.nio.charset.StandardCharsets;
 
 public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager manager;
+    private final HistoryManager historyManager;
 
-    public SubtaskHttpHandler(TaskManager manager) {
+    public SubtaskHttpHandler(TaskManager manager, HistoryManager historyManager) {
         this.manager = manager;
+        this.historyManager = historyManager;
     }
 
 
@@ -50,7 +53,9 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 return;
             }
             if (manager.subtaskIsExist(subtaskId)) {
-                String subtaskJson = gson.toJson(manager.getSubtaskByID(subtaskId));
+                SubTask subTask = manager.getSubtaskByID(subtaskId);
+                String subtaskJson = gson.toJson(subTask);
+                historyManager.addTask(subTask);
                 super.sendText(exchange, subtaskJson);
             } else {
                 super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
@@ -76,6 +81,7 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                     super.sendHasInteractions(exchange, "Подзадача пересекается с существующими.");
                 } else {
                     manager.createSubtask(subTask);
+                    manager.savePrioritizedTask(subTask);
                     super.sendText(exchange, "Подзадача добавлена в epic с ID: " + subTask.getEpicID());
                 }
             } else {
@@ -107,6 +113,8 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
             }
             if (manager.subtaskIsExist(subtaskId)) {
                 manager.removeSubtaskByID(subtaskId);
+                historyManager.remove(subtaskId);
+                manager.removePrioritizedTask(manager.getSubtaskByID(subtaskId));
                 super.sendText(exchange, "Подзадача с ID: " + subtaskId + " была удалена.");
             } else {
                 super.sendNotFound(exchange, "Нет подзадачи с таким ID.");

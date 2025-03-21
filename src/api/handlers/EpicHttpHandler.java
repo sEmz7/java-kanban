@@ -3,6 +3,7 @@ package api.handlers;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.HistoryManager;
 import manager.TaskManager;
 import tasks.Epic;
 
@@ -11,9 +12,11 @@ import java.nio.charset.StandardCharsets;
 
 public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager manager;
+    private final HistoryManager historyManager;
 
-    public EpicHttpHandler(TaskManager manager) {
+    public EpicHttpHandler(TaskManager manager, HistoryManager historyManager) {
         this.manager = manager;
+        this.historyManager = historyManager;
     }
 
     @Override
@@ -49,7 +52,9 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                 return;
             }
             if (manager.epicIsExist(epicId)) {
-                String epicJson = gson.toJson(manager.getEpicByID(epicId));
+                Epic epic = manager.getEpicByID(epicId);
+                String epicJson = gson.toJson(epic);
+                historyManager.addTask(epic);
                 super.sendText(exchange, epicJson);
             } else {
                 super.sendNotFound(exchange, "Нет эпика с таким ID.");
@@ -117,6 +122,7 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
             }
             if (manager.epicIsExist(epicId)) {
                 manager.removeEpicByID(epicId);
+                historyManager.remove(epicId);
                 super.sendText(exchange, "Эпик удален.");
             } else {
                 super.sendNotFound(exchange, "Нет эпика с таким ID.");

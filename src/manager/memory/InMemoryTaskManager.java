@@ -23,6 +23,28 @@ public class InMemoryTaskManager implements TaskManager {
         return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
     }
 
+    @Override
+    public void savePrioritizedTask(Task task) {
+        task.getStartTime().ifPresent(startTime -> {
+            List<Task> tasks = getPrioritizedTasks();
+            boolean isIntersected = tasks.stream()
+                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
+            if (!isIntersected) {
+                prioritizedTasks.add(task);
+            }
+        });
+    }
+
+    @Override
+    public void removePrioritizedTask(Task task) {
+        prioritizedTasks.remove(task);
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
+
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
 
     private void addHistory(Task task) {
