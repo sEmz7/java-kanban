@@ -1,8 +1,8 @@
 package manager.file;
 
 import exceptions.ManagerSaveException;
-import manager.memory.InMemoryTaskManager;
 import manager.TaskManager;
+import manager.memory.InMemoryTaskManager;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
@@ -13,42 +13,15 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
 
-    private boolean checkIntersection(Task newTask, Task task) {
-        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
-        LocalDateTime newTaskEndTime = newTask.getEndTime();
-        return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
-    }
-
-    public void savePrioritizedTask(Task task) {
-        task.getStartTime().ifPresent(startTime -> {
-            List<Task> tasks = getPrioritizedTasks();
-            boolean isIntersected = tasks.stream()
-                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
-            if (!isIntersected) {
-                prioritizedTasks.add(task);
-            }
-        });
-    }
-
-    public void removeEpicInPrioritizedTasks(int epicId) {
+    private void removeEpicInPrioritizedTasks(int epicId) {
         prioritizedTasks.removeIf(task -> task.getTaskID() == epicId);
         ArrayList<SubTask> epicSubtasks = epics.get(epicId).getSubTasks();
         prioritizedTasks.removeIf(epicSubtasks::contains);
-    }
-
-
-    public void removePrioritizedTask(Task task) {
-        prioritizedTasks.remove(task);
-    }
-
-    public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {

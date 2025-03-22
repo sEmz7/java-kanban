@@ -3,8 +3,12 @@ package manager.memory;
 import manager.HistoryManager;
 import manager.Managers;
 import manager.TaskManager;
-import tasks.*;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
+import tasks.TaskStatus;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -14,6 +18,35 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SubTask> subtasks = new HashMap<>();
     protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
             Comparator.comparing(t -> t.getStartTime().get()));
+
+    @Override
+    public boolean checkIntersection(Task newTask, Task task) {
+        LocalDateTime newTaskStartTime = newTask.getStartTime().get();
+        LocalDateTime newTaskEndTime = newTask.getEndTime();
+        return !newTaskStartTime.isAfter(task.getEndTime()) && !newTaskEndTime.isBefore(task.getStartTime().get());
+    }
+
+    @Override
+    public void savePrioritizedTask(Task task) {
+        task.getStartTime().ifPresent(startTime -> {
+            List<Task> tasks = getPrioritizedTasks();
+            boolean isIntersected = tasks.stream()
+                    .anyMatch(existingTask -> checkIntersection(existingTask, task));
+            if (!isIntersected) {
+                prioritizedTasks.add(task);
+            }
+        });
+    }
+
+    @Override
+    public void removePrioritizedTask(Task task) {
+        prioritizedTasks.remove(task);
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
 
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
 

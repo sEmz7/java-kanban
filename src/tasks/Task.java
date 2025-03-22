@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class Task {
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
+    protected static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
     protected String taskName;
     protected String description;
     protected Duration duration;
