@@ -6,7 +6,7 @@ import tasks.Epic;
 import tasks.SubTask;
 import tasks.TaskStatus;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 

@@ -1,7 +1,7 @@
 package taskManagerTests;
 
-import manager.memory.InMemoryTaskManager;
 import manager.Managers;
+import manager.memory.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
@@ -10,7 +10,6 @@ import tasks.Task;
 import tasks.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 

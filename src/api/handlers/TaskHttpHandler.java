@@ -1,6 +1,6 @@
 package api.handlers;
 
-import com.google.gson.*;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.HistoryManager;
