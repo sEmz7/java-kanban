@@ -67,31 +67,30 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
         String[] urlParts = exchange.getRequestURI().getPath().split("/");
         if (urlParts.length == 2) {
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-
             try {
                 Task task = gson.fromJson(body, Task.class);
                 if (task.getTaskID() == 0) {
                     if (manager.getAllTasks().stream()
                             .anyMatch(existingTask -> !existingTask.equals(task) && manager.checkIntersection(existingTask, task))) {
                         super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
-                    } else {
-                        manager.createTask(task);
-                        manager.savePrioritizedTask(task);
-                        super.sendText(exchange, "Задача добавлена.");
+                        return;
                     }
-                } else {
-                    if (!manager.taskIsExist(task.getTaskID())) {
-                        super.sendNotFound(exchange, "Нет задачи с таким ID.");
-                    } else {
-                        if (manager.getAllTasks().stream()
-                                .anyMatch(task1 -> !task1.equals(task) && manager.checkIntersection(task1, task))) {
-                            super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
-                        } else {
-                            manager.updateTask(task);
-                            super.sendText(exchange, "Задача обновлена.");
-                        }
-                    }
+                    manager.createTask(task);
+                    manager.savePrioritizedTask(task);
+                    super.sendText(exchange, "Задача добавлена.");
+                    return;
                 }
+                if (!manager.taskIsExist(task.getTaskID())) {
+                    super.sendNotFound(exchange, "Нет задачи с таким ID.");
+                    return;
+                }
+                if (manager.getAllTasks().stream()
+                        .anyMatch(task1 -> !task1.equals(task) && manager.checkIntersection(task1, task))) {
+                    super.sendHasInteractions(exchange, "Задача пересекается с существующими.");
+                    return;
+                }
+                manager.updateTask(task);
+                super.sendText(exchange, "Задача обновлена.");
             } catch (JsonSyntaxException e) {
                 super.sendNotFound(exchange, "Неверный формат ввода задачи.");
             }
@@ -102,7 +101,7 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
         String[] urlParts = exchange.getRequestURI().getPath().split("/");
 
         if (urlParts.length == 3) {
-            int taskId;
+            int taskId = -1;
             try {
                 taskId = Integer.parseInt(urlParts[2]);
             } catch (NumberFormatException e) {
@@ -114,9 +113,9 @@ public class TaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 historyManager.remove(taskId);
                 manager.removePrioritizedTask(manager.getTaskByID(taskId));
                 super.sendText(exchange, "Задача с ID: " + taskId + " была удалена.");
-            } else {
-                super.sendNotFound(exchange, "Нет задачи с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет задачи с таким ID.");
         }
     }
 }

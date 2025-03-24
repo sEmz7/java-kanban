@@ -45,7 +45,7 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
             String subtasksJson = gson.toJson(manager.getAllSubtasks());
             super.sendText(exchange, subtasksJson);
         } else if (urlParts.length == 3) {
-            int subtaskId;
+            int subtaskId = -1;
             try {
                 subtaskId = Integer.parseInt(urlParts[2]);
             } catch (NumberFormatException e) {
@@ -57,9 +57,9 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 String subtaskJson = gson.toJson(subTask);
                 historyManager.addTask(subTask);
                 super.sendText(exchange, subtaskJson);
-            } else {
-                super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
         }
     }
 
@@ -79,25 +79,25 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                         .anyMatch(subTask1 -> !subTask1.equals(subTask) &&
                                 manager.checkIntersection(subTask1, subTask))) {
                     super.sendHasInteractions(exchange, "Подзадача пересекается с существующими.");
-                } else {
-                    manager.createSubtask(subTask);
-                    manager.savePrioritizedTask(subTask);
-                    super.sendText(exchange, "Подзадача добавлена в epic с ID: " + subTask.getEpicID());
+                    return;
                 }
-            } else {
-                if (!manager.subtaskIsExist(subTask.getTaskID())) {
-                    super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
-                } else {
-                    if (manager.getAllSubtasks().stream()
-                            .anyMatch(subTask1 -> !subTask1.equals(subTask) &&
-                                    manager.checkIntersection(subTask1, subTask))) {
-                        super.sendHasInteractions(exchange, "Подзадача пересекается с существующими.");
-                    } else {
-                        manager.updateSubtask(subTask);
-                        super.sendText(exchange, "Подзадача обновлена.");
-                    }
-                }
+                manager.createSubtask(subTask);
+                manager.savePrioritizedTask(subTask);
+                super.sendText(exchange, "Подзадача добавлена в epic с ID: " + subTask.getEpicID());
+                return;
             }
+            if (!manager.subtaskIsExist(subTask.getTaskID())) {
+                super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
+                return;
+            }
+            if (manager.getAllSubtasks().stream()
+                    .anyMatch(subTask1 -> !subTask1.equals(subTask) &&
+                            manager.checkIntersection(subTask1, subTask))) {
+                super.sendHasInteractions(exchange, "Подзадача пересекается с существующими.");
+                return;
+            }
+            manager.updateSubtask(subTask);
+            super.sendText(exchange, "Подзадача обновлена.");
         }
     }
 
@@ -116,9 +116,9 @@ public class SubtaskHttpHandler extends BaseHttpHandler implements HttpHandler {
                 historyManager.remove(subtaskId);
                 manager.removePrioritizedTask(manager.getSubtaskByID(subtaskId));
                 super.sendText(exchange, "Подзадача с ID: " + subtaskId + " была удалена.");
-            } else {
-                super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет подзадачи с таким ID.");
         }
     }
 }

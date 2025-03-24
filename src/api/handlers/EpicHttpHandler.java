@@ -44,7 +44,7 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
         if (urlParts.length == 2) {
             super.sendText(exchange, gson.toJson(manager.getAllEpics()));
         } else if (urlParts.length == 3) {
-            int epicId;
+            int epicId = -1;
             try {
                 epicId = Integer.parseInt(urlParts[2]);
             } catch (NumberFormatException e) {
@@ -56,9 +56,9 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                 String epicJson = gson.toJson(epic);
                 historyManager.addTask(epic);
                 super.sendText(exchange, epicJson);
-            } else {
-                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет эпика с таким ID.");
         } else if (urlParts.length == 4 && urlParts[3].equals("subtasks")) {
             int epicId;
             try {
@@ -70,9 +70,9 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
             if (manager.epicIsExist(epicId)) {
                 String epicSubtasksJson = gson.toJson(manager.getEpicByID(epicId).getSubTasks());
                 super.sendText(exchange, epicSubtasksJson);
-            } else {
-                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет эпика с таким ID.");
         }
     }
 
@@ -87,22 +87,22 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                     if (manager.getAllEpics().stream()
                             .anyMatch(epic1 -> !epic1.equals(epic) && manager.checkIntersection(epic1, epic))) {
                         super.sendHasInteractions(exchange, "Эпик пересекается с существующими.");
-                    } else {
-                        manager.createEpic(epic);
-                        super.sendText(exchange, "Эпик добавлен.");
+                        return;
                     }
+                    manager.createEpic(epic);
+                    super.sendText(exchange, "Эпик добавлен.");
+                    return;
                 } else if (!manager.epicIsExist(epic.getTaskID())) {
                     super.sendNotFound(exchange, "Нет задачи с таким ID.");
-                } else {
-                    if (manager.getAllEpics().stream()
-                            .anyMatch(epic1 -> !epic1.equals(epic) && manager.checkIntersection(epic1, epic))) {
-                        super.sendHasInteractions(exchange, "Эпик пересекается с существующими.");
-                    } else {
-                        manager.updateEpic(epic);
-                        super.sendText(exchange, "Эпик обновлен.");
-                    }
+                    return;
                 }
-
+                if (manager.getAllEpics().stream()
+                        .anyMatch(epic1 -> !epic1.equals(epic) && manager.checkIntersection(epic1, epic))) {
+                    super.sendHasInteractions(exchange, "Эпик пересекается с существующими.");
+                    return;
+                }
+                manager.updateEpic(epic);
+                super.sendText(exchange, "Эпик обновлен.");
             } catch (JsonSyntaxException e) {
                 super.sendNotFound(exchange, "Неверный формат ввода эпика.");
             }
@@ -124,9 +124,9 @@ public class EpicHttpHandler extends BaseHttpHandler implements HttpHandler {
                 manager.removeEpicByID(epicId);
                 historyManager.remove(epicId);
                 super.sendText(exchange, "Эпик удален.");
-            } else {
-                super.sendNotFound(exchange, "Нет эпика с таким ID.");
+                return;
             }
+            super.sendNotFound(exchange, "Нет эпика с таким ID.");
         }
     }
 }

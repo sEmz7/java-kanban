@@ -15,25 +15,30 @@ public class HttpTaskServer {
     private final HistoryManager historyManager = Managers.getDefaultHistoryManager();
     private HttpServer httpServer;
     private boolean isStarted;
+    private static final String TASKS_ENDPOINT = "/tasks";
+    private static final String EPICS_ENDPOINT = "/epics";
+    private static final String SUBTASKS_ENDPOINT = "/subtasks";
+    private static final String HISTORY_ENDPOINT = "/history";
+    private static final String PRIORITIZED_ENDPOINT = "/prioritized";
 
     public HttpTaskServer(TaskManager manager) {
         this.manager = manager;
-    }
-
-    public void start() {
         try {
             httpServer = HttpServer.create(new InetSocketAddress(serverPort), 0);
-            httpServer.createContext("/tasks", new TaskHttpHandler(manager, historyManager));
-            httpServer.createContext("/epics", new EpicHttpHandler(manager, historyManager));
-            httpServer.createContext("/subtasks", new SubtaskHttpHandler(manager, historyManager));
-            httpServer.createContext("/history", new HistoryHttpHandler(historyManager));
-            httpServer.createContext("/prioritized", new PrioritizedHttpHandler(manager));
-            httpServer.start();
-            isStarted = true;
-            System.out.println("Сервер запущен на порту: " + serverPort);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void start() {
+        httpServer.createContext(TASKS_ENDPOINT, new TaskHttpHandler(manager, historyManager));
+        httpServer.createContext(EPICS_ENDPOINT, new EpicHttpHandler(manager, historyManager));
+        httpServer.createContext(SUBTASKS_ENDPOINT, new SubtaskHttpHandler(manager, historyManager));
+        httpServer.createContext(HISTORY_ENDPOINT, new HistoryHttpHandler(historyManager));
+        httpServer.createContext(PRIORITIZED_ENDPOINT, new PrioritizedHttpHandler(manager));
+        httpServer.start();
+        isStarted = true;
+        System.out.println("Сервер запущен на порту: " + serverPort);
     }
 
     public void stop() {
