@@ -9,6 +9,14 @@ import java.util.List;
 
 public interface TaskManager {
 
+    boolean checkIntersection(Task newTask, Task task);
+
+    void savePrioritizedTask(Task task);
+
+    void removePrioritizedTask(Task task);
+
+    List<Task> getPrioritizedTasks();
+
     ArrayList<Task> getAllTasks();
 
     void removeAllTasks();
